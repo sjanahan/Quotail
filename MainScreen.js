@@ -118,8 +118,7 @@ class MainContentView extends Component{
     
 
   buttonClicked() {
-    console.log(this);
-    
+    this.toggleMenu();    
     console.log('button clicked');
   }
   
@@ -146,16 +145,16 @@ class MainContentView extends Component{
     return (
       <SideMenu touchToClose={true} menu={<HamburgerMenu />}>
 
-      
+
 
         <View style={styles.container}>
         
-
         <TouchableHighlight
           style={styles.button}
           onPress={this.buttonClicked.bind(SideMenu)}>
             <Text style={styles.buttonText}>Open Side Menu!</Text>
         </TouchableHighlight> 
+
 
 
         <Text style={styles.welcome}>
@@ -190,6 +189,8 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
+    width:400,
+    height:400,
   },
   welcome: {
     fontSize: 20,
@@ -235,6 +236,7 @@ var styles = StyleSheet.create({
   button: {
     //textAlign: 'center',
     //color: '#ffffff',
+    flex: -1,
     alignSelf: 'auto',
     marginBottom: 7,
     borderWidth: 1,
