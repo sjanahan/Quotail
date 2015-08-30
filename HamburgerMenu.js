@@ -2,6 +2,7 @@ const React = require('react-native');
 const Dimensions = require('Dimensions');
 const {
   StyleSheet,
+  ListView,
   ScrollView,
   View,
   Image,
@@ -43,8 +44,20 @@ const styles = StyleSheet.create({
 });
 
 class Menu extends Component {
+
+  /*getInitialState: function() {
+    return {
+      dataSource: new ListView.DataSource({
+        rowHasChanged: (row1, row2) => row1 !== row2,
+      }),
+      loaded: false,
+    };
+  },*/
   
   render() {
+    /*if (!this.state.loaded) {
+      return this.renderLoadingView();
+    }*/
     return (
       <ScrollView style={styles.menu}>
         <Text style={styles.item}>PLACE SEARCHBOX HERE</Text>

@@ -38,6 +38,8 @@ class MainContentView extends Component{
   constructor(props) {
     super(props);
 
+    //this.buttonClicked = this.buttonClicked.bind(this);
+
     this.state = {
       pan: new Animated.ValueXY(),
       enter: new Animated.Value(0.5),
@@ -66,6 +68,8 @@ class MainContentView extends Component{
   }
 
   componentWillMount() {
+    console.log("componentDidMount");
+    console.log(this.refs);
     this.panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
@@ -117,9 +121,8 @@ class MainContentView extends Component{
   }
     
 
-  buttonClicked() {
-    this.toggleMenu();    
-    console.log('button clicked');
+  buttonClicked () {
+    this.refs.sidemenu.toggleMenu();    
   }
   
 
@@ -143,15 +146,15 @@ class MainContentView extends Component{
     let nopeScale = pan.x.interpolate({inputRange: [-150, 0], outputRange: [1, 0.5], extrapolate: 'clamp'});
     let animatedNopeStyles = {transform: [{scale: nopeScale}], opacity: nopeOpacity};
     return (
-      <SideMenu touchToClose={true} menu={<HamburgerMenu />}>
+      <SideMenu ref="sidemenu" touchToClose={true} menu={<HamburgerMenu />}>
 
 
 
-        <View style={styles.container}>
+        <View style={styles.container} ref="main">
         
         <TouchableHighlight
           style={styles.button}
-          onPress={this.buttonClicked.bind(SideMenu)}>
+          onPress={this.buttonClicked.bind(this)}>
             <Text style={styles.buttonText}>Open Side Menu!</Text>
         </TouchableHighlight> 
 
