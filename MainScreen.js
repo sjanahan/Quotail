@@ -15,12 +15,14 @@ var {
   Component,
   PanResponder,
   TouchableHighlight,
+  Dimensions,
 } = React;
 
+const deviceScreen = Dimensions.get('window');
 var SideMenu = require('react-native-side-menu');
 
 
-var HamburgerMenu = require('./HamburgerMenu');
+var Menu = require('./Menu');
 var clamp = require('clamp');
 
 const People = [
@@ -34,11 +36,10 @@ const People = [
 var SWIPE_THRESHOLD = 120;
 
 
-class MainContentView extends Component{
+class MainScreen extends Component{
   constructor(props) {
     super(props);
 
-    //this.buttonClicked = this.buttonClicked.bind(this);
 
     this.state = {
       pan: new Animated.ValueXY(),
@@ -68,8 +69,6 @@ class MainContentView extends Component{
   }
 
   componentWillMount() {
-    console.log("componentDidMount");
-    console.log(this.refs);
     this.panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
@@ -119,13 +118,12 @@ class MainContentView extends Component{
     this.goToNextPerson();
     this._animateEntrance();
   }
-    
-
-  buttonClicked () {
-    this.refs.sidemenu.toggleMenu();    
-  }
   
 
+
+  showSideBar () {
+    this.refs.sidemenu.openMenu();
+  }
 
   render() {
     let { pan, enter, } = this.state;
@@ -146,19 +144,14 @@ class MainContentView extends Component{
     let nopeScale = pan.x.interpolate({inputRange: [-150, 0], outputRange: [1, 0.5], extrapolate: 'clamp'});
     let animatedNopeStyles = {transform: [{scale: nopeScale}], opacity: nopeOpacity};
     return (
-      <SideMenu ref="sidemenu" touchToClose={true} menu={<HamburgerMenu />}>
-
-
-
+      <SideMenu ref="sidemenu" touchToClose={true} disableGestures = {true} menu={<Menu menuActions={this.props.menuActions} navigator={this.props.navigator} toggleNavBar={this.props.toggleNavBar}/>}>
         <View style={styles.container} ref="main">
         
         <TouchableHighlight
           style={styles.button}
-          onPress={this.buttonClicked.bind(this)}>
+          onPress={this.showSideBar.bind(this)}>
             <Text style={styles.buttonText}>Open Side Menu!</Text>
         </TouchableHighlight> 
-
-
 
         <Text style={styles.welcome}>
             Welcome to Quotail!
@@ -182,7 +175,9 @@ class MainContentView extends Component{
         </View>
       </SideMenu>
     );
+    
   }
+
 }
 
 
@@ -192,8 +187,8 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     backgroundColor: '#F5FCFF',
-    width:400,
-    height:400,
+    width:deviceScreen.width,
+    height:deviceScreen.height,
   },
   welcome: {
     fontSize: 20,
@@ -237,9 +232,6 @@ var styles = StyleSheet.create({
     color: 'red',
   },
   button: {
-    //textAlign: 'center',
-    //color: '#ffffff',
-    flex: -1,
     alignSelf: 'auto',
     marginBottom: 7,
     borderWidth: 1,
@@ -247,6 +239,6 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = MainContentView;
+module.exports = MainScreen;
 
 
