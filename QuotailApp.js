@@ -45,12 +45,15 @@ var AwesomeProject = React.createClass({
     	<NavigatorIOS
     		shouldUpdate={true}
     		style={styles.container}
+        barTintColor='#00a4b5'
+        tintColor='black'
+        titleTextColor='white'
     		navigationBarHidden={this.state.navigationBarHidden} 
     		initialRoute={{
     			component: MainScreen,
     			passProps: { toggleNavBar: this.toggleNavBar},
-    			title:'Quotail Discovery'
-    		}}
+    			title:'Quotail Discovery',
+        }}
     		
     	/>
     );

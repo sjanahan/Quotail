@@ -18,7 +18,7 @@ class FilterPage extends Component{
     componentDidMount(){
 		//console.log("componentDidMount");
 		//console.log(this.props);
-		this.props.menuActions.close();
+		//this.props.menuActions.close();
 	}
 
 	componentWillUnmount(){
@@ -40,7 +40,7 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white',
     width:deviceScreen.width,
     height:deviceScreen.height,
   },

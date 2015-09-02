@@ -16,6 +16,7 @@ var {
   PanResponder,
   TouchableHighlight,
   Dimensions,
+  Image,
 } = React;
 
 const deviceScreen = Dimensions.get('window');
@@ -34,7 +35,6 @@ const People = [
 ]
 
 var SWIPE_THRESHOLD = 120;
-
 
 class MainScreen extends Component{
   constructor(props) {
@@ -145,26 +145,30 @@ class MainScreen extends Component{
     let animatedNopeStyles = {transform: [{scale: nopeScale}], opacity: nopeOpacity};
     return (
       <SideMenu ref="sidemenu" touchToClose={true} disableGestures = {true} menu={<Menu menuActions={this.props.menuActions} navigator={this.props.navigator} toggleNavBar={this.props.toggleNavBar}/>}>
-        <View style={styles.container} ref="main">
-        
+
+
+        <View style={styles.container} menuActions={this.props.menuActions}>
         <TouchableHighlight
           style={styles.button}
           onPress={this.showSideBar.bind(this)}>
             <Text style={styles.buttonText}>Open Side Menu!</Text>
         </TouchableHighlight> 
 
+
         <Text style={styles.welcome}>
             Welcome to Quotail!
           </Text>
           <Text style={styles.instructions}>
-            Swipe Left for No
+            Swipe Left for Not interested in this ticker.
           </Text>
           <Text style={styles.instructions}>
-            Swipe Right for let me know if you see this again
+            Swipe Right for notify me on repeat activity on this ticker.
           </Text>
           <Animated.View style={[styles.card, animatedCardStyles, {backgroundColor: this.state.person}]} {...this.panResponder.panHandlers}>
+            <Image resizeMode={'contain'} style={styles.card} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=200&sheight=120&id=7115&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}/>
+            <Text> iAmFilter </Text>
           </Animated.View>
-
+          
           <Animated.View style={[styles.nope, animatedNopeStyles]}>
             <Text style={styles.nopeText}>Nope!</Text>
           </Animated.View>
@@ -186,7 +190,7 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: 'white',
     width:deviceScreen.width,
     height:deviceScreen.height,
   },
@@ -201,9 +205,12 @@ var styles = StyleSheet.create({
     marginBottom: 5,
   },
   card: {
-    width: 200,
-    height: 200,
-    backgroundColor: 'red',
+    width: deviceScreen.width * (2/3),
+    height: deviceScreen.height * (1/3),
+    backgroundColor: 'black',
+  },
+  webView: {
+    backgroundColor: 'black',
   },
   yup: {
     borderColor: 'green',
@@ -235,7 +242,7 @@ var styles = StyleSheet.create({
     alignSelf: 'auto',
     marginBottom: 7,
     borderWidth: 1,
-    borderRadius: 2
+    borderRadius: 2,
   }
 });
 

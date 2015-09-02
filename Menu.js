@@ -19,30 +19,16 @@ const styles = StyleSheet.create({
     flex: 1,
     width: window.width,
     height: window.height,
-    backgroundColor: 'gray',
+    backgroundColor: '#E6E6E6',
     padding: 20,
     marginTop:64,
   },
-  avatarContainer: {
-    marginBottom: 20,
-    marginTop: 20,
-  },
-  avatar: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    flex: 1,
-  },
-  name: {
-    position: 'absolute',
-    left: 70,
-    top: 20,
-  },
   item: {
-    fontSize: 14,
+    fontSize: 30,
     fontWeight: '300',
     paddingTop: 5,
     backgroundColor :'white',
+    paddingBottom: 5,
   },
 });
 
@@ -50,7 +36,7 @@ const styles = StyleSheet.create({
 var WatchlistButton = React.createClass({
   goToWatchlist(){
     const Watchlist = require ('./Watchlist');
-    console.log(this.props);
+    this.props.menuActions.close();
     
     this.props.navigator.push({
       component: Watchlist,
@@ -67,7 +53,7 @@ var WatchlistButton = React.createClass({
     return(
       <TouchableHighlight
       onPress={this.goToWatchlist}>
-        <Text>Watchlist</Text>
+        <Text style={styles.item}>Watchlist</Text>
       </TouchableHighlight>
     );    
   }
@@ -76,6 +62,7 @@ var WatchlistButton = React.createClass({
 var FilterButton = React.createClass({
   goToFilters(){
     const FilterPage = require ('./FilterPage');
+    this.props.menuActions.close();
     this.props.navigator.push({
       component: FilterPage,
       title: 'My Filters',
@@ -91,7 +78,7 @@ var FilterButton = React.createClass({
     return(
       <TouchableHighlight
         onPress={this.goToFilters}>
-        <Text>Filters</Text>
+        <Text style={styles.item}>Filters</Text>
       </TouchableHighlight>
     );    
   }
@@ -104,6 +91,7 @@ var Menu = React.createClass({
     return (
         <ScrollView style={styles.menu}>
           <WatchlistButton navigator={this.props.navigator} toggleNavBar={this.props.toggleNavBar} menuActions={this.props.menuActions}/>
+          
           <FilterButton navigator={this.props.navigator} toggleNavBar={this.props.toggleNavBar} menuActions={this.props.menuActions}/>
         </ScrollView>
     );
