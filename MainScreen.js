@@ -137,24 +137,26 @@ class MainScreen extends Component{
     let nopeScale = pan.x.interpolate({inputRange: [-150, 0], outputRange: [1, 0.5], extrapolate: 'clamp'});
     let animatedNopeStyles = {transform: [{scale: nopeScale}], opacity: nopeOpacity};
     return (
-      
+      <View style={styles.container} menuActions={this.props.menuActions}>
+        <Animated.View style={[styles.card, animatedCardStyles, {backgroundColor: this.state.person}]} {...this.panResponder.panHandlers}>
+          <Text textAlign={'center'}> Mylan Pharmaceuticals </Text>
+          <Image resizeMode={'contain'} style={styles.card} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=370&sheight=120&id=7114&timeframe=WEEKLY&elements=0&type=CANDLES&cl=F'}}/>
+          <Text> iAmFilter </Text>
+        </Animated.View>
+        
+        <Animated.View style={[styles.nope, animatedNopeStyles]}>
+          <Text style={styles.nopeText}>Nope!</Text>
+        </Animated.View>
 
+        <Animated.View style={[styles.yup, animatedYupStyles]}>
+          <Text style={styles.yupText}>Yup!</Text>
+        </Animated.View>
 
-        <View style={styles.container} menuActions={this.props.menuActions}>
-          <Animated.View style={[styles.card, animatedCardStyles, {backgroundColor: this.state.person}]} {...this.panResponder.panHandlers}>
-            <Text> Mylan Pharmaceuticals </Text>
-            <Image resizeMode={'contain'} style={styles.card} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=400&sheight=120&id=7114&timeframe=WEEKLY&elements=0&type=CANDLES&cl=F'}}/>
-            <Text> iAmFilter </Text>
-          </Animated.View>
-          
-          <Animated.View style={[styles.nope, animatedNopeStyles]}>
-            <Text style={styles.nopeText}>Nope!</Text>
-          </Animated.View>
-
-          <Animated.View style={[styles.yup, animatedYupStyles]}>
-            <Text style={styles.yupText}>Yup!</Text>
-          </Animated.View>
+        <View style={styles.yup_or_no}>
+          <View style={styles.no_button}></View>
+          <View style={styles.yes_button}></View>
         </View>
+      </View>
   
     );
     
@@ -185,10 +187,33 @@ var styles = StyleSheet.create({
   },
   card: {
     width: deviceScreen.width * .95,
-    height: deviceScreen.height * (.66),
+    height: deviceScreen.height * (.65),
     backgroundColor: 'black',
     borderWidth:2,
-    borderColor:'#E6E6E6'
+    borderColor:'#E6E6E6',
+  },
+  yup_or_no:{    
+    width: deviceScreen.width * .95,
+    height: deviceScreen.height * (.2),
+    backgroundColor: 'white',
+    borderWidth:2,
+    borderColor:'#E6E6E6',
+    opacity:.5,
+    flexDirection:'row',
+  },
+  yes_button:{
+    width: deviceScreen.width*.47,
+    height: deviceScreen.height * .19,
+    backgroundColor: 'green',
+    borderWidth:2,
+    borderColor:'#E6E6E6',
+  },
+  no_button:{
+    width: deviceScreen.width*.47,
+    height: deviceScreen.height * .19,
+    backgroundColor: 'red',
+    borderWidth:2,
+    borderColor:'#E6E6E6',
   },
   yup: {
     borderColor: 'green',
