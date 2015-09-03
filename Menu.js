@@ -21,7 +21,11 @@ const styles = StyleSheet.create({
     height: window.height,
     backgroundColor: '#E6E6E6',
     padding: 20,
-    marginTop:64,
+    paddingTop:64,
+  },
+  menu_item:{
+    borderColor:'black',
+    borderWidth:5
   },
   item: {
     fontSize: 30,
@@ -38,7 +42,7 @@ var WatchlistButton = React.createClass({
     const Watchlist = require ('./Watchlist');
     this.props.menuActions.close();
     
-    this.props.navigator.push({
+    this.props.getNavigator().push({
       component: Watchlist,
       title: 'My Watchlist',
       passProps:{
@@ -61,9 +65,10 @@ var WatchlistButton = React.createClass({
 
 var FilterButton = React.createClass({
   goToFilters(){
+    console.log(this.props);
     const FilterPage = require ('./FilterPage');
     this.props.menuActions.close();
-    this.props.navigator.push({
+    this.props.getNavigator().push({
       component: FilterPage,
       title: 'My Filters',
       passProps:{
@@ -78,7 +83,9 @@ var FilterButton = React.createClass({
     return(
       <TouchableHighlight
         onPress={this.goToFilters}>
-        <Text style={styles.item}>Filters</Text>
+        <View style={styles.menu_item}>
+          <Text style={styles.item}>Filters</Text>
+        </View>
       </TouchableHighlight>
     );    
   }
@@ -87,12 +94,12 @@ var FilterButton = React.createClass({
 
 
 var Menu = React.createClass({
+
   render() {
+    console.log(this.props.getNavigator());
     return (
         <ScrollView style={styles.menu}>
-          <WatchlistButton navigator={this.props.navigator} toggleNavBar={this.props.toggleNavBar} menuActions={this.props.menuActions}/>
-          
-          <FilterButton navigator={this.props.navigator} toggleNavBar={this.props.toggleNavBar} menuActions={this.props.menuActions}/>
+          <FilterButton getNavigator={this.props.getNavigator} menuActions={this.props.menuActions}/>
         </ScrollView>
     );
   },

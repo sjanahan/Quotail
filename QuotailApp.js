@@ -14,11 +14,38 @@ var {
   View,
   Component,
   NavigatorIOS,
+  Image,
+  AlertIOS,
 } = React;
+
 
 var MainScreen = require('./MainScreen');
 
+var settings_uri = 'http://cdn.flaticon.com/png/256/70443.png';
+var msg_uri = 'http://cdn.flaticon.com/png/256/98.png';
 
+var SideMenu = require('react-native-side-menu');
+var Menu = require('./Menu');
+
+/*var SettingsMenu = React.createClass({
+  render(){
+    return(
+
+    );
+  }
+})*/
+
+var MessageButton = React.createClass({
+  render(){
+    <Image source={{uri:msg_uri}}/>
+  }
+});
+
+var SettingsButton = React.createClass({
+  render(){
+    <Image source={{uri:settings_uri}}/>
+  }
+});
 
 var AwesomeProject = React.createClass({
   getInitialState() {
@@ -33,29 +60,65 @@ var AwesomeProject = React.createClass({
 
   toggleNavBar() {
   	console.log("Toggling nav bar");
-    /*this.setState({
-      navigationBarHidden: !this.state.navigationBarHidden
-    });*/
     console.log(this.state.navigationBarHidden);
   },
 
-  render(){
+  printLeft(){
+    console.log("print left");
+  },
 
+  printRight(){
+    console.log("printRight");
+  },
+
+  goToWatchlist(){
+    const Watchlist = require ('./Watchlist');
+    this.refs.sidemenu.closeMenu();
+    
+    this.refs.nav.push({
+      component: Watchlist,
+      title: 'My Watchlist',
+      passProps:{
+        menuActions: this.props.menuActions,
+        toggleNavBar: this.props.toggleNavBar,
+      }, 
+    });
+  },
+
+  showSideBar () {
+    this.refs.sidemenu.openMenu();
+  },
+
+  getNavigator(){
+    if (this.refs.nav){
+      return this.refs.nav.navigator;
+    }else{
+      return undefined;
+    }
+  },
+
+  render(){
     return (
-    	<NavigatorIOS
-    		shouldUpdate={true}
-    		style={styles.container}
-        barTintColor='#00a4b5'
-        tintColor='black'
-        titleTextColor='white'
-    		navigationBarHidden={this.state.navigationBarHidden} 
-    		initialRoute={{
-    			component: MainScreen,
-    			passProps: { toggleNavBar: this.toggleNavBar},
-    			title:'Quotail Discovery',
-        }}
-    		
-    	/>
+      <SideMenu ref="sidemenu" touchToClose={true} disableGestures={true} menu={<Menu getNavigator={this.getNavigator} menuActions={this.props.menuActions}/>}>
+        	<NavigatorIOS
+            ref = "nav"
+        		shouldUpdate={true}
+        		style={styles.container}
+            barTintColor='#00a4b5'
+            tintColor='black'
+            titleTextColor='white'
+        		initialRoute={{
+        			component: MainScreen,
+        			title:'Quotail',
+              leftButtonTitle: 'Settings',
+              onLeftButtonPress: ()=> {this.showSideBar(); },
+              rightButtonTitle: 'Alerts',
+              onRightButtonPress: ()=> {this.goToWatchlist(); },
+            }}
+        	  />
+        </SideMenu>
+
+        
     );
        
   }

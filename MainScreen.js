@@ -20,10 +20,7 @@ var {
 } = React;
 
 const deviceScreen = Dimensions.get('window');
-var SideMenu = require('react-native-side-menu');
 
-
-var Menu = require('./Menu');
 var clamp = require('clamp');
 
 const People = [
@@ -118,14 +115,10 @@ class MainScreen extends Component{
     this.goToNextPerson();
     this._animateEntrance();
   }
-  
 
-
-  showSideBar () {
-    this.refs.sidemenu.openMenu();
-  }
 
   render() {
+    console.log(this.props);
     let { pan, enter, } = this.state;
 
     let [translateX, translateY] = [pan.x, pan.y];
@@ -144,28 +137,13 @@ class MainScreen extends Component{
     let nopeScale = pan.x.interpolate({inputRange: [-150, 0], outputRange: [1, 0.5], extrapolate: 'clamp'});
     let animatedNopeStyles = {transform: [{scale: nopeScale}], opacity: nopeOpacity};
     return (
-      <SideMenu ref="sidemenu" touchToClose={true} disableGestures = {true} menu={<Menu menuActions={this.props.menuActions} navigator={this.props.navigator} toggleNavBar={this.props.toggleNavBar}/>}>
+      
 
 
         <View style={styles.container} menuActions={this.props.menuActions}>
-        <TouchableHighlight
-          style={styles.button}
-          onPress={this.showSideBar.bind(this)}>
-            <Text style={styles.buttonText}>Open Side Menu!</Text>
-        </TouchableHighlight> 
-
-
-        <Text style={styles.welcome}>
-            Welcome to Quotail!
-          </Text>
-          <Text style={styles.instructions}>
-            Swipe Left for Not interested in this ticker.
-          </Text>
-          <Text style={styles.instructions}>
-            Swipe Right for notify me on repeat activity on this ticker.
-          </Text>
           <Animated.View style={[styles.card, animatedCardStyles, {backgroundColor: this.state.person}]} {...this.panResponder.panHandlers}>
-            <Image resizeMode={'contain'} style={styles.card} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=200&sheight=120&id=7115&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}/>
+            <Text> Mylan Pharmaceuticals </Text>
+            <Image resizeMode={'contain'} style={styles.card} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=400&sheight=120&id=7114&timeframe=WEEKLY&elements=0&type=CANDLES&cl=F'}}/>
             <Text> iAmFilter </Text>
           </Animated.View>
           
@@ -177,7 +155,7 @@ class MainScreen extends Component{
             <Text style={styles.yupText}>Yup!</Text>
           </Animated.View>
         </View>
-      </SideMenu>
+  
     );
     
   }
@@ -188,11 +166,12 @@ class MainScreen extends Component{
 var styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
+    justifyContent: 'flex-start',
     alignItems: 'center',
     backgroundColor: 'white',
     width:deviceScreen.width,
     height:deviceScreen.height,
+    paddingTop:75
   },
   welcome: {
     fontSize: 20,
@@ -205,12 +184,11 @@ var styles = StyleSheet.create({
     marginBottom: 5,
   },
   card: {
-    width: deviceScreen.width * (2/3),
-    height: deviceScreen.height * (1/3),
+    width: deviceScreen.width * .95,
+    height: deviceScreen.height * (.66),
     backgroundColor: 'black',
-  },
-  webView: {
-    backgroundColor: 'black',
+    borderWidth:2,
+    borderColor:'#E6E6E6'
   },
   yup: {
     borderColor: 'green',
@@ -237,12 +215,6 @@ var styles = StyleSheet.create({
   nopeText: {
     fontSize: 16,
     color: 'red',
-  },
-  button: {
-    alignSelf: 'auto',
-    marginBottom: 7,
-    borderWidth: 1,
-    borderRadius: 2,
   }
 });
 
