@@ -24,33 +24,72 @@ const deviceScreen = Dimensions.get('window');
 var clamp = require('clamp');
 
 const People = [
-  'red',
-  'green',
-  'blue',
-  'purple',
-  'orange',
+  'white',
 ]
+
+var STACK_OF_CARDS = [
+  {name: 'Radius Pharmaceuticals', // for display purposes
+  id: 16224, // for fetching from chartmill
+  filter_tags: ['day trade', 'long term bear',
+  'over a million']
+  },
+  {
+  name:'SPY',
+  id: 7114, // for fetching from chartmill
+  filter_tags: ['mid term bear']
+  },
+  {
+  name: 'HRTX',
+  id: 16524, // for fetching from chartmill
+  filter_tags: ['day trade', 'long term bear',
+  'over a million']
+  },
+  {
+  name: 'SKetchers X',
+  id: 16324, // for fetching from chartmill
+  filter_tags: ['day trade', 'long term bear',
+  'over a million']
+  },
+  {
+  name: 'CoMricA Bank and shit',
+  id: 824, // for fetching from chartmill
+  filter_tags: ['day trade', 'long term bear',
+  'over a million']
+  },
+  {
+  name: 'No more',
+  id: 0, // for fetching from chartmill
+  filter_tags: ['no more tickers']
+  }
+  ];
+
 
 var SWIPE_THRESHOLD = 120;
 
 class MainScreen extends Component{
   constructor(props) {
     super(props);
-
-
+  
     this.state = {
       pan: new Animated.ValueXY(),
       enter: new Animated.Value(0.5),
       person: People[0],
+      card: STACK_OF_CARDS[0],
     }
   }
 
   goToNextPerson() {
     let currentPersonIdx = People.indexOf(this.state.person);
     let newIdx = currentPersonIdx + 1;
+    
+
+    let currentCardIndex = STACK_OF_CARDS.indexOf(this.state.card)
+    let no_more_tickers_index = STACK_OF_CARDS.length - 1;
+    let newCardIndex = currentCardIndex + 1;
 
     this.setState({
-      person: People[newIdx > People.length - 1 ? 0 : newIdx]
+      person: People[newIdx > People.length - 1 ? 0 : newIdx],
+      card: STACK_OF_CARDS[newCardIndex > no_more_tickers_index? no_more_tickers_index: newCardIndex],
     });
   }
 
@@ -119,7 +158,7 @@ class MainScreen extends Component{
 
   render() {
     console.log(this.props);
-    let { pan, enter, } = this.state;
+    let { pan, enter, id } = this.state;
 
     let [translateX, translateY] = [pan.x, pan.y];
 
@@ -139,9 +178,14 @@ class MainScreen extends Component{
     return (
       <View style={styles.container} menuActions={this.props.menuActions}>
         <Animated.View style={[styles.card, animatedCardStyles, {backgroundColor: this.state.person}]} {...this.panResponder.panHandlers}>
-          <Text textAlign={'center'}> Mylan Pharmaceuticals </Text>
-          <Image resizeMode={'contain'} style={styles.card} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=370&sheight=120&id=7114&timeframe=WEEKLY&elements=0&type=CANDLES&cl=F'}}/>
-          <Text> iAmFilter </Text>
+          
+          <Image resizeMode={'contain'} style={styles.graph} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=370&sheight=120&id='+this.state.card.id+'&timeframe=WEEKLY&elements=0&type=CANDLES&cl=F'}}>
+          <Text style={styles.instructions} textAlign={'center'}> {this.state.card.name} </Text>
+         
+          </Image>
+
+           <Text style={styles.instruction}> {this.state.card.filter_tags + "\t"} </Text>
+          
         </Animated.View>
         
         <Animated.View style={[styles.nope, animatedNopeStyles]}>
@@ -188,9 +232,13 @@ var styles = StyleSheet.create({
   card: {
     width: deviceScreen.width * .95,
     height: deviceScreen.height * (.65),
-    backgroundColor: 'black',
     borderWidth:2,
     borderColor:'#E6E6E6',
+    justifyContent: 'center'
+  },
+  graph: {
+    width: deviceScreen.width  * .90,
+    height: deviceScreen.height * (.60),
   },
   yup_or_no:{    
     width: deviceScreen.width * .95,

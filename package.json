@@ -8,6 +8,7 @@
   "dependencies": {
     "clamp": "^1.0.1",
     "react-native": "*",
-    "react-native-side-menu": "*"
+    "react-native-side-menu": "*",
+    "underscore": "^1.8.3"
   }
 }
