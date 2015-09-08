@@ -72,8 +72,9 @@ var AwesomeProject = React.createClass({
   },
 
   goToWatchlist(){
-    const Watchlist = require ('./Watchlist');
+    var Watchlist = require ('./Watchlist');
     this.refs.sidemenu.closeMenu();
+    console.log(MainScreen);
     
     this.refs.nav.push({
       component: Watchlist,
@@ -110,9 +111,9 @@ var AwesomeProject = React.createClass({
         		initialRoute={{
         			component: MainScreen,
         			title:'Quotail',
-              leftButtonTitle: 'Settings',
+              leftButtonIcon: require('image!settings'),
               onLeftButtonPress: ()=> {this.showSideBar(); },
-              rightButtonTitle: 'Alerts',
+              rightButtonIcon: require('image!bell'),
               onRightButtonPress: ()=> {this.goToWatchlist(); },
             }}
         	  />

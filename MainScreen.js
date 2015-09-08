@@ -21,6 +21,7 @@ var {
 
 const deviceScreen = Dimensions.get('window');
 
+
 var clamp = require('clamp');
 
 const People = [
@@ -75,6 +76,8 @@ class MainScreen extends Component{
       enter: new Animated.Value(0.5),
       person: People[0],
       card: STACK_OF_CARDS[0],
+      yes_watchlist:[],
+      no_watchlist:[],
     }
   }
 
@@ -123,22 +126,32 @@ class MainScreen extends Component{
         var velocity;
 
         if (vx > 0) {
+          console.log("to the right");
           velocity = clamp(vx, 3, 5);
-        } else if (vx < 0) {
+        } else {
+          console.log("to the left");
           velocity = clamp(vx * -1, 3, 5) * -1;
         }
 
         if (Math.abs(this.state.pan.x._value) > SWIPE_THRESHOLD) {
+          if (velocity > 0){
+            // make some network call
+            this.state.yes_watchlist.push(this.state.card);
+          }else{
+            // make some network call
+            this.state.no_watchlist.push(this.state.card);
+          }
           Animated.decay(this.state.pan.x, {
             velocity: velocity,
             deceleration: 0.98,
           }).start(this._resetState.bind(this))
 
-          Animated.decay(this.state.pan.y, {
+          /*Animated.decay(this.state.pan.y, {
             velocity: vy,
             deceleration: 0.985,
-          }).start();
+          }).start();*/
         } else {
+          console.log("Not past threshold");
           Animated.spring(this.state.pan, {
             toValue: {x: 0, y: 0},
             friction: 4
@@ -149,6 +162,8 @@ class MainScreen extends Component{
   }
 
   _resetState() {
+    console.log(this.state.yes_watchlist);
+    console.log(this.state.no_watchlist);
     this.state.pan.setValue({x: 0, y: 0});
     this.state.enter.setValue(0);
     this.goToNextPerson();
@@ -179,7 +194,7 @@ class MainScreen extends Component{
       <View style={styles.container} menuActions={this.props.menuActions}>
         <Animated.View style={[styles.card, animatedCardStyles, {backgroundColor: this.state.person}]} {...this.panResponder.panHandlers}>
           
-          <Image resizeMode={'contain'} style={styles.graph} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=370&sheight=120&id='+this.state.card.id+'&timeframe=WEEKLY&elements=0&type=CANDLES&cl=F'}}>
+          <Image resizeMode={'contain'} style={styles.graph} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=370&sheight=120&id='+this.state.card.id+'&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}>
           <Text style={styles.instructions} textAlign={'center'}> {this.state.card.name} </Text>
          
           </Image>
@@ -197,8 +212,12 @@ class MainScreen extends Component{
         </Animated.View>
 
         <View style={styles.yup_or_no}>
-          <View style={styles.no_button}></View>
-          <View style={styles.yes_button}></View>
+          <TouchableHighlight onPress={ ()=> {this.state.yes_watchlist.push(this.state.card); this._resetState();}}>
+            <View style={styles.no_button}></View>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={ ()=> {this.state.no_watchlist.push(this.state.card); this._resetState();}}>
+            <View style={styles.yes_button}></View>
+          </TouchableHighlight>
         </View>
       </View>
   
@@ -246,7 +265,7 @@ var styles = StyleSheet.create({
     backgroundColor: 'white',
     borderWidth:2,
     borderColor:'#E6E6E6',
-    opacity:.5,
+    opacity:.7,
     flexDirection:'row',
   },
   yes_button:{
