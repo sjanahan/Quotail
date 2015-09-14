@@ -30,42 +30,42 @@ const People = [
 
 var STACK_OF_CARDS = [
   {name: 'Radius Pharmaceuticals', // for display purposes
-  id: 16224, // for fetching from chartmill
+  id: 16225, // for fetching from chartmill
   filter_tags: ['day trade', 'long term bear',
   'over a million']
   },
   {
   name:'SPY',
-  id: 7114, // for fetching from chartmill
+  id: 50157, // for fetching from chartmill
   filter_tags: ['mid term bear']
   },
   {
-  name: 'HRTX',
-  id: 16524, // for fetching from chartmill
-  filter_tags: ['day trade', 'long term bear',
+  name: 'Heron Therapeutics',
+  id: 15838, // for fetching from chartmill
+  filter_tags: ['long term bull',
   'over a million']
   },
   {
-  name: 'SKetchers X',
-  id: 16324, // for fetching from chartmill
-  filter_tags: ['day trade', 'long term bear',
+  name: 'Sketchers',
+  id: 4370, // for fetching from chartmill
+  filter_tags: ['day trade',
   'over a million']
   },
   {
-  name: 'CoMricA Bank and shit',
-  id: 824, // for fetching from chartmill
-  filter_tags: ['day trade', 'long term bear',
+  name: 'Comerica Bank',
+  id: 5835, // for fetching from chartmill
+  filter_tags: ['day trade', 'long term bull',
   'over a million']
   },
   {
-  name: 'No more',
+  name: 'N/A',
   id: 0, // for fetching from chartmill
-  filter_tags: ['no more tickers']
+  filter_tags: ['NONE']
   }
   ];
 
 
-var SWIPE_THRESHOLD = 120;
+var SWIPE_THRESHOLD = 60;
 
 class MainScreen extends Component{
   constructor(props) {
@@ -108,6 +108,8 @@ class MainScreen extends Component{
   }
 
   componentWillMount() {
+    // network call for stack of cards
+
     this.panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
@@ -192,14 +194,19 @@ class MainScreen extends Component{
     let animatedNopeStyles = {transform: [{scale: nopeScale}], opacity: nopeOpacity};
     return (
       <View style={styles.container} menuActions={this.props.menuActions}>
-        <Animated.View style={[styles.card, animatedCardStyles, {backgroundColor: this.state.person}]} {...this.panResponder.panHandlers}>
+        <Animated.View style={[styles.card, animatedCardStyles]} {...this.panResponder.panHandlers}>
           
           <Image resizeMode={'contain'} style={styles.graph} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=370&sheight=120&id='+this.state.card.id+'&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}>
-          <Text style={styles.instructions} textAlign={'center'}> {this.state.card.name} </Text>
+          <Text style={styles.welcome} textAlign={'center'}> {this.state.card.name} </Text>
          
           </Image>
 
-           <Text style={styles.instruction}> {this.state.card.filter_tags + "\t"} </Text>
+          <View style={styles.filter_container}>
+           {this.state.card.filter_tags.map(function(filter, i){
+              return <Text style={styles.filter} key={i}> {filter}</Text>
+                     
+           })} 
+           </View>
           
         </Animated.View>
         
@@ -212,11 +219,11 @@ class MainScreen extends Component{
         </Animated.View>
 
         <View style={styles.yup_or_no}>
-          <TouchableHighlight onPress={ ()=> {this.state.yes_watchlist.push(this.state.card); this._resetState();}}>
-            <View style={styles.no_button}></View>
-          </TouchableHighlight>
           <TouchableHighlight onPress={ ()=> {this.state.no_watchlist.push(this.state.card); this._resetState();}}>
-            <View style={styles.yes_button}></View>
+            <View style={styles.no_button}><Text style={styles.instructions}>Don't watch</Text></View>
+          </TouchableHighlight>
+          <TouchableHighlight onPress={ ()=> {this.state.yes_watchlist.push(this.state.card); this._resetState();}}>
+            <View style={styles.yes_button}><Text style={styles.instructions}>Watch</Text></View>
           </TouchableHighlight>
         </View>
       </View>
@@ -241,19 +248,35 @@ var styles = StyleSheet.create({
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-    margin: 10,
+  },
+  filter:{
+    textAlign: 'center',
+    color: '#333333',
+    backgroundColor:'yellow',
+    borderWidth:1,
+    margin:2,
+    paddingRight:2,
+    borderRadius:5,
+    overflow:'hidden'
+
+  },
+  filter_container:{
+    justifyContent:'center',
+    flexDirection:'row'
   },
   instructions: {
     textAlign: 'center',
     color: '#333333',
     marginBottom: 5,
+   
   },
   card: {
     width: deviceScreen.width * .95,
     height: deviceScreen.height * (.65),
     borderWidth:2,
     borderColor:'#E6E6E6',
-    justifyContent: 'center'
+    justifyContent: 'center',
+    alignItems:'center',
   },
   graph: {
     width: deviceScreen.width  * .90,
@@ -274,6 +297,8 @@ var styles = StyleSheet.create({
     backgroundColor: 'green',
     borderWidth:2,
     borderColor:'#E6E6E6',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   no_button:{
     width: deviceScreen.width*.47,
@@ -281,6 +306,8 @@ var styles = StyleSheet.create({
     backgroundColor: 'red',
     borderWidth:2,
     borderColor:'#E6E6E6',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   yup: {
     borderColor: 'green',

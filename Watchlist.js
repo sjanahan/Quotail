@@ -12,6 +12,8 @@ var {
 const deviceScreen = Dimensions.get('window');
 
 var Watchlist = React.createClass({
+	mixins: [React.addons.LinkedStateMixin],
+	
 	componentDidMount(){
 		console.log("componentDidMount");
 		//this.props.menuActions.close();

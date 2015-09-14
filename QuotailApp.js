@@ -74,7 +74,7 @@ var AwesomeProject = React.createClass({
   goToWatchlist(){
     var Watchlist = require ('./Watchlist');
     this.refs.sidemenu.closeMenu();
-    console.log(MainScreen);
+    //console.log(this.refs.mainscreen.route);
     
     this.refs.nav.push({
       component: Watchlist,
