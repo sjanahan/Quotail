@@ -99,7 +99,7 @@ var FilterButton = React.createClass({
 var Menu = React.createClass({
 
   render() {
-    console.log(this.props.getNavigator());
+    //console.log(this.props.getNavigator());
     return (
         <ScrollView style={styles.menu}>
           <FilterButton getNavigator={this.props.getNavigator} menuActions={this.props.menuActions}/>

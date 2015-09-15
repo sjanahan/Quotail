@@ -174,7 +174,7 @@ class MainScreen extends Component{
 
 
   render() {
-    console.log(this.props);
+    //console.log(this.props);
     let { pan, enter, id } = this.state;
 
     let [translateX, translateY] = [pan.x, pan.y];
