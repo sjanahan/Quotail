@@ -113,7 +113,7 @@ var AwesomeProject = React.createClass({
         			title:'Quotail',
               leftButtonIcon: require('image!settings'),
               onLeftButtonPress: ()=> {this.showSideBar(); },
-              rightButtonIcon: require('image!bell'),
+              rightButtonIcon: require('image!binoculars'),
               onRightButtonPress: ()=> {this.goToWatchlist(); },
             }}
         	  />

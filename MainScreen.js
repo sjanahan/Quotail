@@ -65,7 +65,7 @@ var STACK_OF_CARDS = [
   ];
 
 
-var SWIPE_THRESHOLD = 60;
+var SWIPE_THRESHOLD = 100;
 
 class MainScreen extends Component{
   constructor(props) {
@@ -148,10 +148,10 @@ class MainScreen extends Component{
             deceleration: 0.98,
           }).start(this._resetState.bind(this))
 
-          /*Animated.decay(this.state.pan.y, {
+          Animated.decay(this.state.pan.y, {
             velocity: vy,
             deceleration: 0.985,
-          }).start();*/
+          }).start();
         } else {
           console.log("Not past threshold");
           Animated.spring(this.state.pan, {
@@ -210,21 +210,23 @@ class MainScreen extends Component{
           
         </Animated.View>
         
-        <Animated.View style={[styles.nope, animatedNopeStyles]}>
-          <Text style={styles.nopeText}>Nope!</Text>
-        </Animated.View>
 
-        <Animated.View style={[styles.yup, animatedYupStyles]}>
-          <Text style={styles.yupText}>Yup!</Text>
-        </Animated.View>
 
         <View style={styles.yup_or_no}>
           <TouchableHighlight onPress={ ()=> {this.state.no_watchlist.push(this.state.card); this._resetState();}}>
-            <View style={styles.no_button}><Text style={styles.instructions}>Don't watch</Text></View>
+            <View style={styles.no_button}><Image source={require('image!no')}/></View>
           </TouchableHighlight>
           <TouchableHighlight onPress={ ()=> {this.state.yes_watchlist.push(this.state.card); this._resetState();}}>
-            <View style={styles.yes_button}><Text style={styles.instructions}>Watch</Text></View>
+            <View style={styles.yes_button}><Image source={require('image!yes')}/></View>
           </TouchableHighlight>
+
+        <Animated.View style={[styles.nope, animatedNopeStyles]}>
+          <Text style={styles.nopeText}>Don't Watch!</Text>
+        </Animated.View>
+
+        <Animated.View style={[styles.yup, animatedYupStyles]}>
+          <Text style={styles.yupText}>Add to Watch!</Text>
+        </Animated.View>
         </View>
       </View>
   
@@ -279,7 +281,7 @@ var styles = StyleSheet.create({
     alignItems:'center',
   },
   graph: {
-    width: deviceScreen.width  * .90,
+    width: deviceScreen.width  * .94,
     height: deviceScreen.height * (.60),
   },
   yup_or_no:{    
@@ -288,13 +290,13 @@ var styles = StyleSheet.create({
     backgroundColor: 'white',
     borderWidth:2,
     borderColor:'#E6E6E6',
-    opacity:.7,
     flexDirection:'row',
+    opacity:.7
   },
   yes_button:{
     width: deviceScreen.width*.47,
     height: deviceScreen.height * .19,
-    backgroundColor: 'green',
+    backgroundColor: 'black',
     borderWidth:2,
     borderColor:'#E6E6E6',
     alignItems: 'center',
@@ -303,7 +305,7 @@ var styles = StyleSheet.create({
   no_button:{
     width: deviceScreen.width*.47,
     height: deviceScreen.height * .19,
-    backgroundColor: 'red',
+    backgroundColor: 'black',
     borderWidth:2,
     borderColor:'#E6E6E6',
     alignItems: 'center',

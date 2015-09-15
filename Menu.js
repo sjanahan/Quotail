@@ -20,19 +20,27 @@ const styles = StyleSheet.create({
     width: window.width,
     height: window.height,
     backgroundColor: '#E6E6E6',
-    padding: 20,
-    paddingTop:64,
+    paddingTop:window.height*.067,
+    shadowColor:'black',
+    shadowOffset:{width:window.width,
+                  height:window.height},
+    shadowOpacity:1,
+    shadowRadius:1,
   },
   menu_item:{
     borderColor:'black',
-    borderWidth:5
+    borderBottomWidth:1,
   },
   item: {
-    fontSize: 30,
+    flex:1,
+    alignItems:'center',
+    justifyContent: 'center',
+    fontSize: 20,
     fontWeight: '300',
     paddingTop: 5,
     backgroundColor :'white',
     paddingBottom: 5,
+    paddingLeft:10,
   },
 });
 
