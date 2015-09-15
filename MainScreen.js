@@ -196,7 +196,7 @@ class MainScreen extends Component{
       <View style={styles.container} menuActions={this.props.menuActions}>
         <Animated.View style={[styles.card, animatedCardStyles]} {...this.panResponder.panHandlers}>
           
-          <Image resizeMode={'contain'} style={styles.graph} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=370&sheight=120&id='+this.state.card.id+'&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}>
+          <Image resizeMode={'contain'} style={styles.graph} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=350&sheight=120&id='+this.state.card.id+'&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}>
           <Text style={styles.welcome} textAlign={'center'}> {this.state.card.name} </Text>
          
           </Image>

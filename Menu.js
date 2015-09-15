@@ -21,11 +21,6 @@ const styles = StyleSheet.create({
     height: window.height,
     backgroundColor: '#E6E6E6',
     paddingTop:window.height*.067,
-    shadowColor:'black',
-    shadowOffset:{width:window.width,
-                  height:window.height},
-    shadowOpacity:1,
-    shadowRadius:1,
   },
   menu_item:{
     borderColor:'black',
