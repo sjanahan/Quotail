@@ -7,7 +7,7 @@
   },
   "dependencies": {
     "clamp": "^1.0.1",
-    "react-native": "*",
+    "react-native": "^0.9",
     "react-native-side-menu": "*",
     "underscore": "^1.8.3"
   }

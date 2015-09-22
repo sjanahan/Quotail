@@ -70,7 +70,7 @@ var FilterButton = React.createClass({
   goToFilters(){
     console.log(this.props);
     const FilterPage = require ('./FilterPage');
-    this.props.menuActions.close();
+    //this.props.menuActions.close();
     this.props.getNavigator().push({
       component: FilterPage,
       title: 'My Filters',

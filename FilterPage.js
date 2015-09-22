@@ -18,11 +18,11 @@ class FilterPage extends Component{
     componentDidMount(){
 		//console.log("componentDidMount");
 		//console.log(this.props);
-		//this.props.menuActions.close();
+		this.props.menuActions.close();
 	}
 
 	componentWillUnmount(){
-		console.log("componentWillUnmount");
+		//console.log("componentWillUnmount");
 		//this.props.toggleNavBar();
 	}
 

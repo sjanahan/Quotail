@@ -17,6 +17,7 @@ var {
   TouchableHighlight,
   Dimensions,
   Image,
+  AlertIOS,
 } = React;
 
 const deviceScreen = Dimensions.get('window');
@@ -31,11 +32,10 @@ const People = [
 var STACK_OF_CARDS = [
   {name: 'Radius Pharmaceuticals', // for display purposes
   id: 16225, // for fetching from chartmill
-  filter_tags: ['day trade', 'long term bear',
-  'over a million']
+  filter_tags: ['bullish sweep']
   },
   {
-  name:'SPY',
+  name:'SPDR S&P 500 ETF Trust',
   id: 50157, // for fetching from chartmill
   filter_tags: ['mid term bear']
   },
@@ -52,7 +52,7 @@ var STACK_OF_CARDS = [
   'over a million']
   },
   {
-  name: 'Comerica Bank',
+  name: 'Comerica Incorporated',
   id: 5835, // for fetching from chartmill
   filter_tags: ['day trade', 'long term bull',
   'over a million']
@@ -65,7 +65,7 @@ var STACK_OF_CARDS = [
   ];
 
 
-var SWIPE_THRESHOLD = 100;
+var SWIPE_THRESHOLD = 120;
 
 class MainScreen extends Component{
   constructor(props) {
@@ -216,6 +216,18 @@ class MainScreen extends Component{
           <TouchableHighlight onPress={ ()=> {this.state.no_watchlist.push(this.state.card); this._resetState();}}>
             <View style={styles.no_button}><Image source={require('image!no')}/></View>
           </TouchableHighlight>
+          
+          <TouchableHighlight onPress={ ()=> { AlertIOS.alert(
+                  'Tail trade?',
+                  `${this.state.card.name}`,
+            [
+              {text: 'Dismiss'},
+              {text: 'Yes', onPress: () => { this._resetState(); } } ,
+            ] 
+          )}} >
+            <View style={ styles.tail_button }><Image source={ require('image!tail') }/></View>
+          </TouchableHighlight>
+          
           <TouchableHighlight onPress={ ()=> {this.state.yes_watchlist.push(this.state.card); this._resetState();}}>
             <View style={styles.yes_button}><Image source={require('image!yes')}/></View>
           </TouchableHighlight>
@@ -291,26 +303,38 @@ var styles = StyleSheet.create({
     borderWidth:2,
     borderColor:'#E6E6E6',
     flexDirection:'row',
-    opacity:.7
   },
   yes_button:{
-    width: deviceScreen.width*.47,
+    width: deviceScreen.width*.31,
     height: deviceScreen.height * .19,
     backgroundColor: 'black',
     borderWidth:2,
     borderColor:'#E6E6E6',
+    borderRadius:10,
     alignItems: 'center',
     justifyContent: 'center',
   },
   no_button:{
-    width: deviceScreen.width*.47,
+    width: deviceScreen.width*.31,
     height: deviceScreen.height * .19,
     backgroundColor: 'black',
     borderWidth:2,
     borderColor:'#E6E6E6',
+    borderRadius:10,
     alignItems: 'center',
     justifyContent: 'center',
   },
+  tail_button:{
+    width: deviceScreen.width*.31,
+    height: deviceScreen.height * .19,
+    backgroundColor: '#00a4b5',
+    borderWidth:2,
+    borderRadius:10,
+    borderColor:'#E6E6E6',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
   yup: {
     borderColor: 'green',
     borderWidth: 2,
