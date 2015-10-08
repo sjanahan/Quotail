@@ -18,6 +18,7 @@ var {
 } = React;
 
 
+var global_styles = require('./Styles');
 var MainScreen = require('./MainScreen');
 
 var settings_uri = 'http://cdn.flaticon.com/png/256/70443.png';
@@ -25,6 +26,7 @@ var msg_uri = 'http://cdn.flaticon.com/png/256/98.png';
 
 var SideMenu = require('react-native-side-menu');
 var Menu = require('./Menu');
+
 
 /*var SettingsMenu = React.createClass({
   render(){
@@ -53,9 +55,7 @@ var AwesomeProject = React.createClass({
     };
   },
 
-  componentDidUpdate(prevProps, prevState){
-  	console.log("QuotailApp updating");
-  },
+
 
   toggleNavBar() {
   	console.log("Toggling nav bar");
@@ -98,14 +98,15 @@ var AwesomeProject = React.createClass({
   },
 
   render(){
+
     return (
-      <SideMenu ref="sidemenu" touchToClose={true} disableGestures={true} menu={<Menu getNavigator={this.getNavigator} menuActions={this.props.menuActions}/>}>
+      <SideMenu ref="sidemenu" touchToClose={true} disableGestures={true} menu={<Menu getNavigator={this.getNavigator}/>}>
         	<NavigatorIOS
             ref = "nav"
         		shouldUpdate={true}
         		style={styles.container}
             barTintColor='#00a4b5'
-            tintColor='black'
+            tintColor='white'
             titleTextColor='white'
         		initialRoute={{
         			component: MainScreen,
@@ -116,7 +117,7 @@ var AwesomeProject = React.createClass({
               onRightButtonPress: ()=> {this.goToWatchlist(); },
             }}
         	  />
-        </SideMenu>
+      </SideMenu>
 
         
     );
@@ -130,6 +131,12 @@ var styles = StyleSheet.create({
     flex: 1,
   },
 });
+
+/**
+ * This part is very important. Without it you wouldn't be able to access `menuActions`
+ * @type {Object}
+ */
+
 
 
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);

@@ -9,6 +9,8 @@ var {
 	TouchableHighlight,
 } = React;
 
+var global_styles = require('./Styles');
+
 
 var MessageView = React.createClass({
 	getCurrentItem(){
@@ -16,7 +18,7 @@ var MessageView = React.createClass({
 	},
 
 	render(){
-		console.log(this.props);
+		//console.log(this.props);
 		var trade = this.getCurrentItem().name;
 		return(
 			<ScrollView style={ styles.container }>
@@ -33,7 +35,7 @@ var MessageView = React.createClass({
 		          	)}} >
 
 					<View style={ styles.bubble } key={ i }>
-						<Text style={ styles.messages } key={ i }> {msg} </Text>
+						<Text style={ [styles.messages, global_styles.gray_darkest ] } key={ i }> {msg} </Text>
 					</View>
 
 					</TouchableHighlight>);
@@ -52,7 +54,6 @@ var styles = StyleSheet.create({
 		paddingTop:10,
 	},
 	bubble:{
-	    backgroundColor: '#262626',
 	    borderRadius: 5,
 	    padding: 5,
 	    flexDirection: 'column',
@@ -60,13 +61,13 @@ var styles = StyleSheet.create({
 	    marginBottom:10,
 	    marginLeft:10,
 	    marginRight:10,
+	    backgroundColor:'#AAE0F7'
 
 	},
 	messages:{
-
-		 fontFamily: 'HelveticaNeue',
+		fontFamily: 'HelveticaNeue',
 	    fontSize: 16,
-	    color: 'white',
+	    color: '#D5D5D5',
 	    marginBottom: 5,
 
 	}

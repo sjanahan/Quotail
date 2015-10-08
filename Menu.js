@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
 });
 
 
-var WatchlistButton = React.createClass({
+/*var WatchlistButton = React.createClass({
   goToWatchlist(){
     const Watchlist = require ('./Watchlist');
     this.props.menuActions.close();
@@ -64,20 +64,15 @@ var WatchlistButton = React.createClass({
       </TouchableHighlight>
     );    
   }
-});
+});*/
 
 var FilterButton = React.createClass({
   goToFilters(){
-    console.log(this.props);
     const FilterPage = require ('./FilterPage');
     //this.props.menuActions.close();
     this.props.getNavigator().push({
       component: FilterPage,
       title: 'My Filters',
-      passProps:{
-        menuActions: this.props.menuActions,
-        toggleNavBar: this.props.toggleNavBar,
-      }
     });
 
   },
@@ -102,11 +97,12 @@ var Menu = React.createClass({
     //console.log(this.props.getNavigator());
     return (
         <ScrollView style={styles.menu}>
-          <FilterButton getNavigator={this.props.getNavigator} menuActions={this.props.menuActions}/>
+          <FilterButton getNavigator={this.props.getNavigator}/>
         </ScrollView>
     );
   },
 });
+
 
 
 module.exports = Menu;

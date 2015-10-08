@@ -7,6 +7,9 @@
   },
   "dependencies": {
     "clamp": "^1.0.1",
+    "http": "0.0.0",
+    "q": "^1.4.1",
+    "querystring": "^0.2.0",
     "react-native": "^0.9",
     "react-native-side-menu": "*",
     "underscore": "^1.8.3"

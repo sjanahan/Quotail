@@ -18,14 +18,14 @@ var MessageView = require('./MessageView');
 
 var WATCHLIST_ITEMS = [
 	{
-		ticker:'RDUS',
-		name: 'Radius',
-		messages: ['9/12/15: short term bear', '9/16/15: bullish sweep'],
+		ticker:'TE',
+		name: 'TECO Energy',
+		messages: ['9/1/15: TECO Scan'],
 	},
 	{
-		ticker:'HRTX',
-		name:'Heron Therapeutics',
-		messages: ['9/16/15: over a million']
+		ticker:'MEG',
+		name:'Media General',
+		messages: ['9/16/15: TECO Scan', '9/18/15: TECO Scan'],
 	}
 ];
 
@@ -147,7 +147,8 @@ var styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     fontWeight: 'bold',
-    marginBottom: 2
+    marginBottom: 2,
+    color:'#668086'
   },
   time: {
     position: 'absolute',

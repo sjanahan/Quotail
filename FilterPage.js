@@ -16,9 +16,7 @@ class FilterPage extends Component{
     }
 
     componentDidMount(){
-		//console.log("componentDidMount");
-		//console.log(this.props);
-		this.props.menuActions.close();
+		this.context.menuActions.close();
 	}
 
 	componentWillUnmount(){
@@ -27,6 +25,7 @@ class FilterPage extends Component{
 	}
 
 	render(){
+		//console.log(this.props);
 		return(
 			<View style={styles.container}>
 				<Text style={styles.welcome}> Filters </Text>
@@ -34,6 +33,10 @@ class FilterPage extends Component{
 		);
 	}
 }
+
+FilterPage.contextTypes = {
+  menuActions: React.PropTypes.object.isRequired
+};
 
 var styles = StyleSheet.create({
   container: {
