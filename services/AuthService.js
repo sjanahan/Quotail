@@ -1,3 +1,9 @@
+var React = require('react-native');
+
+var{
+  AlertIOS
+} = React;
+
 var LoginConstants = require('../constants/LoginConstants');
 var {
   LOGIN_URL,
@@ -5,11 +11,13 @@ var {
 } = LoginConstants;
 
 var querystring = require('querystring');
-var LoginActions = require ('../LoginAction');
+var LoginActions = require ('../actions/LoginAction');
 var Home = require('../Home');
 var Q = require('q');
 
 var LocalStorage = require('../stores/LocalStorage');
+
+var LoginStore = require('../stores/LoginStore');
 
 
 class AuthService {
@@ -31,12 +39,18 @@ class AuthService {
     }
 
     return this.handleAuth(fetch(LOGIN_URL, Obj));
-
-  
   }
 
   logout() {
     LoginActions.logoutUser();
+  }
+
+  forgotPassword(){
+    LoginActions.forgotPassword();
+  }
+
+  signUp(){
+    LoginActions.signUp();
   }
 
   signup(username, password, extra) {
@@ -56,15 +70,9 @@ class AuthService {
         response.json().then(function(jsoned){
         if (jsoned.token){
           var jwt = jsoned.token;
-
-          // Transition to Home
-          //return <Home/>;
-          LocalStorage.set("jwt", jwt).then(function(){
-            console.log('WORD')
-            return true;
-          });
+          LoginActions.loginUser(jwt);
         }else{
-          // maybe alert on this?
+          AlertIOS.alert(jsoned.message);
           console.log(jsoned.message);
           return false;
         }
@@ -73,10 +81,11 @@ class AuthService {
   }
 
   isLoggedIn(){
+    var context = this;
     var deferred = Q.defer();
     LocalStorage.get('jwt', 'string').then(function(jwt){
-      console.log(jwt);
       if (jwt != null){
+        LoginStore.set_jwt(jwt);
         console.log("jwt is not null");
         deferred.resolve(true);
       }else{
@@ -86,6 +95,14 @@ class AuthService {
     });
 
     return deferred.promise;
+  }
+
+  get_jwt(){
+    return this._jwt;
+  }
+
+  is_logged_in(){
+    return (this._jwt != null);
   }
 }
 

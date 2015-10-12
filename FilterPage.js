@@ -19,11 +19,6 @@ class FilterPage extends Component{
 		this.context.menuActions.close();
 	}
 
-	componentWillUnmount(){
-		//console.log("componentWillUnmount");
-		//this.props.toggleNavBar();
-	}
-
 	render(){
 		//console.log(this.props);
 		return(

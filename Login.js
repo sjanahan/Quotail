@@ -29,6 +29,14 @@ var Login = React.createClass({
   	AuthService.login(this.state.username, this.state.password);
   },
 
+  forgotpw: function(){
+    AuthService.forgotPassword();
+  },
+
+  signUp: function(){
+    AuthService.signUp();
+  },
+
   render: function() {
     return (
         <View style={styles.container}>
@@ -43,7 +51,6 @@ var Login = React.createClass({
                         style={[styles.input, styles.whiteFont]}
                         placeholder="E-mail"
                         placeholderTextColor="#FFF"
-                        //value='janahansivaraman@gmail.com'
                         onChangeText={(text) => this.setState({username:text})}
                     />
                 </View>
@@ -54,11 +61,10 @@ var Login = React.createClass({
                         style={[styles.input, styles.whiteFont]}
                         placeholder="Password"
                         placeholderTextColor="#FFF"
-                        //value='muffin'
                         onChangeText={(text) => this.setState({password:text})}
                     />
                 </View>
-                <TouchableHighlight underlayColor='transparent'>
+                <TouchableHighlight underlayColor='transparent' onPress={ this.forgotpw }>
                 <View style={styles.forgotContainer}>
                     <Text style={styles.greyFont}>Forgot Password</Text>
                 </View>
@@ -71,7 +77,7 @@ var Login = React.createClass({
             </View>
             </TouchableHighlight>
 
-            <TouchableHighlight underlayColor='transparent'>
+            <TouchableHighlight underlayColor='transparent' onPress={ this.signUp } >
             <View style={styles.signup} >
                 <Text style={styles.greyFont}>Don't have an account?<Text style={styles.whiteFont}>  Sign Up</Text></Text>
             </View>

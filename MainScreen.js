@@ -26,6 +26,9 @@ const deviceScreen = Dimensions.get('window');
 var clamp = require('clamp');
 var Q = require('q');
 
+var LoginStore = require('./stores/LoginStore');
+var DataService = require('./services/DataService');
+
 const People = [
   'white',
 ]
@@ -70,9 +73,6 @@ var SWIPE_THRESHOLD = 120;
 class MainScreen extends Component{
   constructor(props) {
     super(props);
-
-
-  
     this.state = {
       pan: new Animated.ValueXY(),
       enter: new Animated.Value(0.5),
@@ -81,36 +81,6 @@ class MainScreen extends Component{
       yes_watchlist:[],
       no_watchlist:[],
     }
-  }
-
-  getStackOfCards(jwt){
-    console.log("getStackOfCards");
-    console.log(jwt);
-
-    var Obj = {
-      method: 'get',
-      headers: {
-        'accept': 'application/json',
-        'content-Type' : 'application/json',
-        'Authorization': jwt,
-      }
-    };
-
-    //console.log(Obj);
-
-    var cards_url = 'http://mobile.quotail.co/api/filter/mobile_alerts';
-
-    fetch(cards_url, Obj).then(function (res) {
-      console.log("fetching cards");
-      console.log(res);
-      res.json().then(function(data){
-        console.log(data);
-        //STACK_OF_CARDS= data;
-        //this.props.jwt = data.token;
-      });
-      
-    });
-
   }
 
   goToNextPerson() {
@@ -128,69 +98,9 @@ class MainScreen extends Component{
     });
   }
 
-  /*login(){
-
-    var deferred = Q.defer();
-
-    console.log("componentDidMount")
-    var login = querystring.stringify({
-                  'email': 'amajedi@gmail.com',
-                  'password': '!muffinY0'
-              });
-    
-    var Obj = {
-      method:'post',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body:login,
-    }
-
-    console.log(login);
-
-    var login_url = 'http://mobile.quotail.co/user/login'
-
-
-    // get an API token
-    fetch(login_url, Obj).then(function (res) {
-      var data = "";
-      res.json().then(function(data){
-        //console.log(data);
-        //this.props.jwt = data.token;
-        //console.log(data.token);
-        deferred.resolve(data.token);
-        //this.state.jwt = data.token;
-
-
-        //console.log(this.state.jwt);
-        //getStackOfCards(data.token);
-      })
-      //data = JSON.parse(res);
-    });
-
-    return deferred.promise;
-  }*/
 
   componentDidMount() {
-
-    /*var context = this;
-
-    this.login().then(function(jwt){
-      console.log(jwt);
-      
-      context.getStackOfCards(jwt);
-    })
-    //console.log(jwt);*/
-
-
     this._animateEntrance();
-
-    //this.getStackOfCards();
-    
-    
-    
-    
   }
 
   _animateEntrance() {
@@ -201,8 +111,7 @@ class MainScreen extends Component{
   }
 
   componentWillMount() {
-
-    this.panResponder = PanResponder.create({
+      this.panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
 
@@ -266,7 +175,6 @@ class MainScreen extends Component{
 
 
   render() {
-    //console.log(this.props);
     let { pan, enter, id } = this.state;
 
     let [translateX, translateY] = [pan.x, pan.y];
@@ -302,8 +210,6 @@ class MainScreen extends Component{
           
         </Animated.View>
         
-
-
         <View style={styles.yup_or_no}>
           <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> {this.state.no_watchlist.push(this.state.card); this._resetState();}}>
             <View style={styles.no_button}><Image source={require('image!no')}/></View>
@@ -319,8 +225,6 @@ class MainScreen extends Component{
           )}} >
             <View style={ styles.tail_button }><Image source={ require('image!tail') }/></View>
           </TouchableHighlight>
-          
-          
           
           <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> {this.state.yes_watchlist.push(this.state.card); this._resetState();}}>
             <View style={styles.yes_button}><Image source={require('image!yes')}/></View>
@@ -456,16 +360,3 @@ var styles = StyleSheet.create({
 });
 
 module.exports = MainScreen;
-
-/*<TouchableHighlight onPress={ ()=> { AlertIOS.alert(
-                  'Tail trade?',
-                  `${this.state.card.name}`,
-            [
-              {text: 'Dismiss'},
-              {text: 'Yes', onPress: () => { this._resetState(); } } ,
-            ] 
-          )}} >
-            <View style={ styles.tail_button }><Image source={ require('image!tail') }/></View>
-          </TouchableHighlight>*/
-
-

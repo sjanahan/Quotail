@@ -3,17 +3,15 @@ var LoginConstants = require( '../constants/LoginConstants');
 var 
 {LOGIN_USER, LOGOUT_USER} = LoginConstants;
 
-
-
 var LocalStorage = require('./LocalStorage');
 var jwt_decode = require( 'jwt-decode');
 
 
-class LoginStore extends LocalStorage{
+class LoginStore{
 
   constructor() {
-    super();
-    this.subscribe(() => this._registerToActions.bind(this))
+    //super();
+    //this.subscribe(() => this._registerToActions.bind(this))
     this._user = null;
     this._jwt = null;
   }
@@ -34,11 +32,15 @@ class LoginStore extends LocalStorage{
     };
   }
 
-  get user() {
+  set_jwt(jwt){
+    this._jwt = jwt;
+  }
+  
+  get_user() {
     return this._user;
   }
 
-  get jwt() {
+  get_jwt() {
     return this._jwt;
   }
 

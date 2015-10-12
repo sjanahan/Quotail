@@ -13,6 +13,7 @@ var {
 var SideMenu = require('react-native-side-menu');
 var Menu = require('./Menu');
 var MainScreen = require('./MainScreen');
+var LoginStore = require('./stores/LoginStore');
 
 var FirstAuthenticatedScreen = React.createClass({
   printLeft(){
@@ -26,14 +27,12 @@ var FirstAuthenticatedScreen = React.createClass({
   goToWatchlist(){
     var Watchlist = require ('./Watchlist');
     this.refs.sidemenu.closeMenu();
-    //console.log(this.refs.mainscreen.route);
     
     this.refs.nav.push({
       component: Watchlist,
       title: 'My Watchlist',
       passProps:{
         menuActions: this.props.menuActions,
-        toggleNavBar: this.props.toggleNavBar,
       }, 
     });
   },
