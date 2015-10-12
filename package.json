@@ -8,10 +8,15 @@
   "dependencies": {
     "clamp": "^1.0.1",
     "http": "0.0.0",
+    "jwt-decode": "^1.4.0",
     "q": "^1.4.1",
     "querystring": "^0.2.0",
     "react-native": "^0.9",
+    "react-native-router": "^0.2.1",
+    "react-native-router-flux": "^0.3.3",
     "react-native-side-menu": "*",
-    "underscore": "^1.8.3"
+    "reqwest": "^2.0.4",
+    "underscore": "^1.8.3",
+    "when": "^3.7.3"
   }
 }

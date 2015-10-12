@@ -128,7 +128,7 @@ class MainScreen extends Component{
     });
   }
 
-  login(){
+  /*login(){
 
     var deferred = Q.defer();
 
@@ -170,18 +170,18 @@ class MainScreen extends Component{
     });
 
     return deferred.promise;
-  }
+  }*/
 
   componentDidMount() {
 
-    var context = this;
+    /*var context = this;
 
     this.login().then(function(jwt){
       console.log(jwt);
       
       context.getStackOfCards(jwt);
     })
-    //console.log(jwt);
+    //console.log(jwt);*/
 
 
     this._animateEntrance();

@@ -15,128 +15,77 @@ var {
   NavigatorIOS,
   Image,
   AlertIOS,
+  Navigator,
 } = React;
 
 
 var global_styles = require('./Styles');
-var MainScreen = require('./MainScreen');
+var LocalStorage = require('./stores/LocalStorage');
+
+var Dimensions = require('Dimensions');
+var {width, height} = Dimensions.get('window');
+var Login = require('./Login');
+var Home = require('./Home');
+var Filters = require('./FilterPage');
+var MessageView = require('./MessageView');
+var Watchlist = require('./Watchlist');
+var Menu = require('./Menu');
+
+var Loading = require ('./Loading');
+
+var AuthService = require('./services/AuthService');
 
 var settings_uri = 'http://cdn.flaticon.com/png/256/70443.png';
 var msg_uri = 'http://cdn.flaticon.com/png/256/98.png';
+//var RNRouter = require('react-native-router');
+var {Router, Route, Container, Actions, Animations, Schema} = require('react-native-router-flux');
 
-var SideMenu = require('react-native-side-menu');
-var Menu = require('./Menu');
-
-
-/*var SettingsMenu = React.createClass({
-  render(){
-    return(
-
-    );
-  }
-})*/
-
-var MessageButton = React.createClass({
-  render(){
-    <Image source={{uri:msg_uri}}/>
-  }
-});
-
-var SettingsButton = React.createClass({
-  render(){
-    <Image source={{uri:settings_uri}}/>
-  }
-});
+//var LoginStore = require('./stores/LoginStore');
 
 var AwesomeProject = React.createClass({
-  getInitialState() {
+  getInitialState(){
     return {
-      navigationBarHidden: false
-    };
+      isLoggedIn:null
+    };  
   },
 
-
-
-  toggleNavBar() {
-  	console.log("Toggling nav bar");
-    console.log(this.state.navigationBarHidden);
-  },
-
-  printLeft(){
-    console.log("print left");
-  },
-
-  printRight(){
-    console.log("printRight");
-  },
-
-  goToWatchlist(){
-    var Watchlist = require ('./Watchlist');
-    this.refs.sidemenu.closeMenu();
-    //console.log(this.refs.mainscreen.route);
-    
-    this.refs.nav.push({
-      component: Watchlist,
-      title: 'My Watchlist',
-      passProps:{
-        menuActions: this.props.menuActions,
-        toggleNavBar: this.props.toggleNavBar,
-      }, 
+  componentWillMount(){
+    var context = this;
+    LocalStorage.remove("jwt").then(function(){
+      console.log('removing')
+    });
+    AuthService.isLoggedIn().then(function(bool){
+      console.log('callback');
+      console.log("Component did Mount");
+      context.setState({
+        isLoggedIn: bool
+      });
+      console.log('after setState')
     });
   },
 
-  showSideBar () {
-    this.refs.sidemenu.openMenu();
-  },
-
-  getNavigator(){
-    if (this.refs.nav){
-      return this.refs.nav.navigator;
-    }else{
-      return undefined;
-    }
-  },
-
   render(){
+    var fs;
+    console.log(this.state.isLoggedIn);
+    if (this.state.isLoggedIn === true){
+      fs = <Home/>;
+    }else if (this.state.isLoggedIn === false){
+      fs = <Login/>;
+    }else{
+      fs = <Loading/>;
+    }
 
     return (
-      <SideMenu ref="sidemenu" touchToClose={true} disableGestures={true} menu={<Menu getNavigator={this.getNavigator}/>}>
-        	<NavigatorIOS
-            ref = "nav"
-        		shouldUpdate={true}
-        		style={styles.container}
-            barTintColor='#00a4b5'
-            tintColor='white'
-            titleTextColor='white'
-        		initialRoute={{
-        			component: MainScreen,
-        			title:'Quotail',
-              leftButtonIcon: require('image!settings'),
-              onLeftButtonPress: ()=> {this.showSideBar(); },
-              rightButtonIcon: require('image!binoculars'),
-              onRightButtonPress: ()=> {this.goToWatchlist(); },
-            }}
-        	  />
-      </SideMenu>
-
-        
-    );
-       
+      <View style={ styles.app }>
+        {fs}
+      </View>)
   }
-});
 
+});
 
 var styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});
-
-/**
- * This part is very important. Without it you wouldn't be able to access `menuActions`
- * @type {Object}
- */
-
+  app: { width, height },
+})
 
 
 AppRegistry.registerComponent('AwesomeProject', () => AwesomeProject);

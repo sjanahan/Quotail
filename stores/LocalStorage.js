@@ -3,7 +3,7 @@ var {
   AsyncStorage
 } = React;
 
-var DEVICE_STORAGE_PREFIX = '@DropBot:';
+var DEVICE_STORAGE_PREFIX = '@Quotail:';
 
 var _parseString = function(value, type) {
   if (value === null) {
@@ -23,22 +23,33 @@ var _parseString = function(value, type) {
   }
 };
 
-var LocalStorage = {
-  get: function (key, type) {
+class LocalStorage {
+  constructor(){
+    console.log("LocalStorage construction");
+
+  }
+
+  get(key, type) {
+    console.log("GETTING " + key + " " + type);
     //need type to properly parse string.
     return AsyncStorage.getItem(DEVICE_STORAGE_PREFIX + key)
     .then(value => {
       return _parseString(value, type);
     });
-  },
+  }
 
-  set: function (key, value) {
+  set(key, value) {
+    console.log(key + " " + value);
     var serializedValue = typeof value === "object" ? JSON.stringify(value) : value.toString();
 
     return AsyncStorage.setItem(DEVICE_STORAGE_PREFIX + key, serializedValue)
-  },
+  }
 
-  multiGet: function (keyMaps) {
+  remove(key){
+    return AsyncStorage.removeItem(DEVICE_STORAGE_PREFIX + key);
+  }
+
+  multiGet(keyMaps) {
     // keyMaps is an array of arrays where each subArray is of the form
     // [key, keyType]. keyType is necessary to parse the string returned
     // from AsyncStorage
@@ -54,9 +65,9 @@ var LocalStorage = {
       });
       return values;
     });
-  },
+  }
 
-  multiSet: function (rawKvPairs) {
+  multiSet(rawKvPairs) {
     //need to test
     var kvPairs = rawKvPairs.map(([key, value]) => {
       var serializedValue = typeof value === "object" ? JSON.stringify(value) : value.toString();
@@ -66,3 +77,5 @@ var LocalStorage = {
     return AsyncStorage.multiSet(kvPairs)
   }
 };
+
+module.exports = new LocalStorage();
