@@ -21,7 +21,7 @@ var Login = React.createClass({
   getInitialState: function() {
     return {
       username: 'janahansivaraman@gmail.com',
-      password: 'muffin'
+      password: 'i9u8y7t6'
     }
   },
 
@@ -40,9 +40,9 @@ var Login = React.createClass({
   render: function() {
     return (
         <View style={styles.container}>
-            <Image style={styles.bg} source={{uri: 'http://i.imgur.com/xlQ56UK.jpg'}} />
+            <Image style={styles.bg}/>
             <View style={styles.header}>
-                <Image style={styles.mark} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
+                <Image style={styles.mark} source={require('image!Quotail')} />
             </View>
             <View style={styles.inputs}>
                 <View style={styles.inputContainer}>
@@ -97,7 +97,8 @@ var styles = StyleSheet.create({
         left: 0,
         top: 0,
         width: windowSize.width,
-        height: windowSize.height
+        height: windowSize.height,
+        backgroundColor:'#151B20'
     },
     header: {
         justifyContent: 'center',

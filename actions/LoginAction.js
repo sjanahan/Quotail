@@ -36,6 +36,10 @@ class LoginAction{
     Actions.signup();
   }
 
+  register(){
+    Actions.registered();
+  }
+
 
 }
 

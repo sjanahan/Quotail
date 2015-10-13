@@ -21,7 +21,10 @@ var Loading = React.createClass({
 
 var styles = StyleSheet.create({
 	loading:{
-		flex : 1
+		flex : 1,
+		alignItems: 'center',
+		justifyContent: 'flex-start',
+		paddingTop:200,
 	}
 });
 
