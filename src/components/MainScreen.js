@@ -20,14 +20,20 @@ var {
   AlertIOS,
 } = React;
 
-var global_styles = require('./Styles');
+var GlobalStyles = require('../constants/GlobalStyles');
 
-const deviceScreen = Dimensions.get('window');
+var GlobalConstants = require('../constants/GlobalConstants');
+var {
+  colors,
+  deviceScreen,
+  querystring
+} = GlobalConstants;
+
 var clamp = require('clamp');
 var Q = require('q');
 
-var LoginStore = require('./stores/LoginStore');
-var DataService = require('./services/DataService');
+var LoginStore = require('../stores/LoginStore');
+var DataService = require('../services/DataService');
 
 const People = [
   'white',
@@ -66,7 +72,6 @@ var STACK_OF_CARDS = [
   ];
 
 var querystring = require ('querystring');
-var jwt = '';
 
 var SWIPE_THRESHOLD = 120;
 
@@ -197,13 +202,13 @@ class MainScreen extends Component{
         <Animated.View style={[styles.card, animatedCardStyles]} {...this.panResponder.panHandlers}>
           
           <Image resizeMode={'contain'} style={styles.graph} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=350&sheight=120&id='+this.state.card.id+'&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}>
-          <Text style={[styles.welcome, global_styles.light_gray]} textAlign={'center'}> {this.state.card.name} </Text>
+          <Text style={[styles.welcome, GlobalStyles.light_gray]} textAlign={'center'}> {this.state.card.name} </Text>
          
           </Image>
 
           <View style={styles.filter_container}>
            {this.state.card.filter_tags.map(function(filter, i){
-              return <Text style={[global_styles.yellow, styles.filter, global_styles.darker_gray]} key={i}> {filter}</Text>
+              return <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]} key={i}> {filter}</Text>
                      
            })} 
            </View>
@@ -268,22 +273,14 @@ var styles = StyleSheet.create({
     padding:4,
     borderRadius:5,
     overflow:'hidden'
-
   },
   filter_container:{
     justifyContent:'center',
     flexDirection:'row'
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-   
-  },
   card: {
     width: deviceScreen.width * .95,
     height: deviceScreen.height * (.65),
-    //borderWidth:2,
     borderColor:'#E6E6E6',
     justifyContent: 'center',
     alignItems:'center',
@@ -296,15 +293,12 @@ var styles = StyleSheet.create({
     width: deviceScreen.width * .95,
     height: deviceScreen.height * (.2),
     backgroundColor: 'white',
-    //borderWidth:2,
-    //opacity:0,
     borderColor:'#E6E6E6',
     flexDirection:'row',
   },
   yes_button:{
     width: deviceScreen.width*.315,
     height: deviceScreen.height * .19,
-    //backgroundColor: '#e6e6e6',
     borderRadius:3,
     borderColor:'#E6E6E6',
     alignItems: 'center',
@@ -324,9 +318,6 @@ var styles = StyleSheet.create({
     width: deviceScreen.width*.315,
     height: deviceScreen.height * .19,
     backgroundColor: 'white',
-    //borderWidth:2,
-    //borderRadius:10,
-    //borderColor:'#E6E6E6',
     alignItems: 'center',
     justifyContent: 'center',
   },

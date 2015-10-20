@@ -1,46 +1,28 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-
-
- @flow
- */
-
 var React = require('react-native');
 var {
-  AppRegistry,
-  StyleSheet,
-  Text,
-  View,
   Component,
-  NavigatorIOS,
-  Image,
-  AlertIOS,
-  Navigator,
+  View,
+  StyleSheet,
 } = React;
 
+// Global colors and screen size
+var GlobalConstants = require('../constants/GlobalConstants');
+var {
+  deviceScreen
+} = GlobalConstants;
 
-var global_styles = require('./Styles');
-var LocalStorage = require('./stores/LocalStorage');
-
-var Dimensions = require('Dimensions');
-var {width, height} = Dimensions.get('window');
-
+// Components
 var Login = require('./Login');
-var Home = require('./Home');
-var Filters = require('./FilterPage');
-var MessageView = require('./MessageView');
-var Watchlist = require('./Watchlist');
-var Menu = require('./Menu');
+var NavBar = require('./NavBar');
 var Loading = require ('./Loading');
-var SignUp = require('./SignUp');
-var ForgotPassword = require('./ForgotPassword');
 
-var AuthService = require('./services/AuthService');
 
-var settings_uri = 'http://cdn.flaticon.com/png/256/70443.png';
-var msg_uri = 'http://cdn.flaticon.com/png/256/98.png';
-var {Router, Route, Container, Actions, Animations, Schema} = require('react-native-router-flux');
 
+var LocalStorage = require('../stores/LocalStorage');
+var AuthService = require('../services/AuthService');
+
+/*var settings_uri = 'http://cdn.flaticon.com/png/256/70443.png';
+var msg_uri = 'http://cdn.flaticon.com/png/256/98.png';*/
 var Launch = React.createClass({
   getInitialState(){
     return {
@@ -67,7 +49,7 @@ var Launch = React.createClass({
     var fs;
     console.log(this.state.isLoggedIn);
     if (this.state.isLoggedIn === true){
-      fs = <Home/>;
+      fs = <NavBar/>;
     }else if (this.state.isLoggedIn === false){
       fs = <Login/>;
     }else{
@@ -83,7 +65,10 @@ var Launch = React.createClass({
 });
 
 var styles = StyleSheet.create({
-  app: { width, height },
+  app: { 
+    width: deviceScreen.width, 
+    height: deviceScreen.height 
+  }
 })
 
 module.exports = Launch;

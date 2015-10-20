@@ -10,8 +10,8 @@ var {
 } = LoginConstants;
 
 var querystring = require('querystring');
-var LoginActions = require ('../actions/LoginAction');
-var Home = require('../Home');
+var LoginActions = require ('../actions/LoginActions');
+var NavBar = require('../components/NavBar');
 
 var LocalStorage = require('../stores/LocalStorage');
 var LoginStore = require('../stores/LoginStore');

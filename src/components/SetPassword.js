@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 var React = require('react-native');
 var Dimensions = require('Dimensions');
 var windowSize = Dimensions.get('window');
@@ -17,16 +17,21 @@ var {
   TouchableHighlight,
 } = React;
 
-var SignUp = React.createClass({
+var SetPassword = React.createClass({
   getInitialState: function() {
     return {
-      username: 'janahansivaraman@gmail.com',
-      password: 'i9u8y7t6'
+      password: 'fdsfs',
+      confirm_password: 'fdsd'
     }
   },
 
-  register: function(){
-  	AuthService.register();
+
+  forgotpw: function(){
+    AuthService.forgotPassword();
+  },
+
+  signIn: function(){
+    AuthService.setPassword(this.state.password, this.state.confirm_password);
   },
 
   render: function() {
@@ -34,16 +39,16 @@ var SignUp = React.createClass({
         <View style={styles.container}>
             <Image style={styles.bg}/>
             <View style={styles.header}>
-                <Image style={styles.mark} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
+                <Image style={styles.mark} source={require('image!Quotail')} />
             </View>
             <View style={styles.inputs}>
                 <View style={styles.inputContainer}>
-                    <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
+                    <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/ON58SIG.png'}}/>
                     <TextInput 
                         style={[styles.input, styles.whiteFont]}
-                        placeholder="E-mail"
+                        placeholder="Password"
                         placeholderTextColor="#FFF"
-                        onChangeText={(text) => this.setState({username:text})}
+                        onChangeText={(text) => this.setState({password:text})}
                     />
                 </View>
                 <View style={styles.inputContainer}>
@@ -51,22 +56,18 @@ var SignUp = React.createClass({
                     <TextInput
                         password={true}
                         style={[styles.input, styles.whiteFont]}
-                        placeholder="Password"
+                        placeholder="Confirm Password"
                         placeholderTextColor="#FFF"
-                        onChangeText={(text) => this.setState({password:text})}
+                        onChangeText={(text) => this.setState({confirm_password:text})}
                     />
                 </View>
-               
             </View>
             
-            <TouchableHighlight underlayColor='transparent' onPress={this.signUp}>
+            <TouchableHighlight underlayColor='transparent' onPress={this.signin}>
             <View style={styles.signin}>
-                <Text style={styles.whiteFont}>Register</Text>
+                <Text style={styles.whiteFont}>Set Password</Text>
             </View>
             </TouchableHighlight>
-
-
-       
         </View>
     );
   }
@@ -82,7 +83,8 @@ var styles = StyleSheet.create({
         left: 0,
         top: 0,
         width: windowSize.width,
-        height: windowSize.height
+        height: windowSize.height,
+        backgroundColor:'#151B20'
     },
     header: {
         justifyContent: 'center',
@@ -145,5 +147,4 @@ var styles = StyleSheet.create({
       color: '#FFF'
     }
 })
-
-module.exports = SignUp;
+module.exports = SetPassword;*/

@@ -5,10 +5,13 @@ var {
 	Text,
 	Component,
 	StyleSheet,
-	Dimensions,
 } = React;
 
-const deviceScreen = Dimensions.get('window');
+
+var GlobalConstants = require('../constants/GlobalConstants');
+var {
+  deviceScreen
+} = GlobalConstants;
 
 class FilterPage extends Component{
 	constructor(props) {
@@ -20,7 +23,6 @@ class FilterPage extends Component{
 	}
 
 	render(){
-		//console.log(this.props);
 		return(
 			<View style={styles.container}>
 				<Text style={styles.welcome}> Filters </Text>
@@ -28,7 +30,6 @@ class FilterPage extends Component{
 		);
 	}
 }
-
 FilterPage.contextTypes = {
   menuActions: React.PropTypes.object.isRequired
 };
@@ -38,7 +39,7 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'white',
+    backgroundColor: GlobalConstants.colors.white,
     width:deviceScreen.width,
     height:deviceScreen.height,
   },

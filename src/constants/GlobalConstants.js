@@ -1,35 +1,28 @@
 var React = require('react-native');
-var {
-	StyleSheet,
+
+var{
+	Dimensions
 } = React;
+var deviceScreen = Dimensions.get('window');
 
-var styles = StyleSheet.create({
-	// dark dark grey
-	gray_darkest:{
-		color:'#151B20'
-	},
-	gray_darkest_background:{
-		backgroundColor:'#151B20'
-	},
+var GlobalConstants = {
 
-	light_gray:{
-		color:'#AAAAAA'
-	},
+	deviceScreen: deviceScreen,
 
-	darker_gray:{
-		color:'#668086'
-	},
 
-	yellow:{
-		backgroundColor:'#f2d936'
-	},
-
-	qt_background:{
-		backgroundColor:'#00a4b5'
+	colors:{
+		qtColor: '#00a4b5',
+		red: '#d31030',
+		green: '#09bb30',
+		text_white: '#FFFFFF',
+		text_gray: '#D5D5D5',
+		gray_dark: '#151B20',
+		yellow: '#f2d936',
+		border_gray: '#e6e6e6',
 	}
-})
+};
 
-module.exports = styles;
+module.exports = GlobalConstants;
 
 /*
 @qtColor: #00a4b5;

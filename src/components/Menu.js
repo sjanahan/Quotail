@@ -12,15 +12,19 @@ const {
   TouchableHighlight,
 } = React;
 
-const window = Dimensions.get('window');
+var GlobalConstants = require('../constants/GlobalConstants');
+var {
+  deviceScreen
+} = GlobalConstants;
+
 
 const styles = StyleSheet.create({
   menu: {
     flex: 1,
-    width: window.width,
-    height: window.height,
+    width: deviceScreen.width,
+    height: deviceScreen.height,
     backgroundColor: '#E6E6E6',
-    paddingTop:window.height*.067,
+    paddingTop:deviceScreen.height*.067,
   },
   menu_item:{
     borderColor:'black',
@@ -40,36 +44,28 @@ const styles = StyleSheet.create({
 });
 
 
-/*var WatchlistButton = React.createClass({
-  goToWatchlist(){
-    const Watchlist = require ('./Watchlist');
-    this.props.menuActions.close();
-    
-    this.props.getNavigator().push({
-      component: Watchlist,
-      title: 'My Watchlist',
-      passProps:{
-        menuActions: this.props.menuActions,
-        toggleNavBar: this.props.toggleNavBar,
-      }, 
-    });
+var AccountSettingsButton = React.createClass({
+  goToAccountSettings(){
+    console.log('this is where account settings go');
 
   },
+
 
   render(){
     return(
       <TouchableHighlight
-      onPress={this.goToWatchlist}>
-        <Text style={styles.item}>Watchlist</Text>
+      onPress={this.goToAccountSettings}>
+      <View style={styles.menu_item}>
+        <Text style={styles.item}>AccountSettings</Text>
+      </View>
       </TouchableHighlight>
     );    
   }
-});*/
+});
 
 var FilterButton = React.createClass({
   goToFilters(){
     const FilterPage = require ('./FilterPage');
-    //this.props.menuActions.close();
     this.props.getNavigator().push({
       component: FilterPage,
       title: 'My Filters',
@@ -89,20 +85,37 @@ var FilterButton = React.createClass({
   }
 });
 
+var LogoutButton = React.createClass({
+  logout(){
+    var AuthService = require('../services/AuthService');
+    console.log(AuthService);
+    AuthService.logout();
+  },
+
+  render(){
+    return(
+      <TouchableHighlight
+        onPress={this.logout}>
+        <View style={styles.menu_item}>
+          <Text style={styles.item}>Log out</Text>
+        </View>
+      </TouchableHighlight>
+    );    
+  }
+});
+
 
 
 var Menu = React.createClass({
-
   render() {
-    //console.log(this.props.getNavigator());
     return (
         <ScrollView style={styles.menu}>
+          <AccountSettingsButton/>
           <FilterButton getNavigator={this.props.getNavigator}/>
+          <LogoutButton/>
         </ScrollView>
     );
   },
 });
-
-
 
 module.exports = Menu;

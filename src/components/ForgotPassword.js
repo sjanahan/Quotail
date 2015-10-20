@@ -1,14 +1,7 @@
 'use strict';
 var React = require('react-native');
-var Dimensions = require('Dimensions');
-var windowSize = Dimensions.get('window');
-
-var AuthService = require('./services/AuthService');
-
-var Home = require('./Home');
-
 var {
-  AppRegistry,
+  
   StyleSheet,
   View,
   Text,
@@ -17,71 +10,52 @@ var {
   TouchableHighlight,
 } = React;
 
-var Login = React.createClass({
+var GlobalConstants = require('../constants/GlobalConstants');
+var {
+  deviceScreen
+} = GlobalConstants;
+
+var AuthService = require('../services/AuthService');
+
+var ForgotPassword = React.createClass({
   getInitialState: function() {
     return {
-      username: 'janahansivaraman@gmail.com',
-      password: 'i9u8y7t6'
+      email: '',
     }
   },
 
-  signin: function() {
-  	AuthService.login(this.state.username, this.state.password);
-  },
-
-  forgotpw: function(){
-    AuthService.forgotPassword();
-  },
-
-  signUp: function(){
-    AuthService.signUp();
+  resetPassword: function(){
+  	AuthService.resetPassword(this.state.email);
   },
 
   render: function() {
     return (
         <View style={styles.container}>
-            <Image style={styles.bg}/>
+            <Image style={styles.bg} />
             <View style={styles.header}>
-                <Image style={styles.mark} source={require('image!Quotail')} />
+                <Image style={styles.mark} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
             </View>
             <View style={styles.inputs}>
                 <View style={styles.inputContainer}>
                     <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
                     <TextInput 
                         style={[styles.input, styles.whiteFont]}
-                        placeholder="E-mail"
+                        placeholder= "E-mail"
                         placeholderTextColor="#FFF"
-                        onChangeText={(text) => this.setState({username:text})}
+                        onChangeText={(text) => this.setState({email:text})}
                     />
                 </View>
-                <View style={styles.inputContainer}>
-                    <Image style={styles.inputPassword} source={{uri: 'http://i.imgur.com/ON58SIG.png'}}/>
-                    <TextInput
-                        password={true}
-                        style={[styles.input, styles.whiteFont]}
-                        placeholder="Password"
-                        placeholderTextColor="#FFF"
-                        onChangeText={(text) => this.setState({password:text})}
-                    />
-                </View>
-                <TouchableHighlight underlayColor='transparent' onPress={ this.forgotpw }>
-                <View style={styles.forgotContainer}>
-                    <Text style={styles.greyFont}>Forgot Password</Text>
-                </View>
-                </TouchableHighlight>
+               
             </View>
             
-            <TouchableHighlight underlayColor='transparent' onPress={this.signin}>
+            <TouchableHighlight underlayColor='transparent' onPress={this.resetPassword}>
             <View style={styles.signin}>
-                <Text style={styles.whiteFont}>Sign In</Text>
+                <Text style={styles.whiteFont}>Reset Password</Text>
             </View>
             </TouchableHighlight>
 
-            <TouchableHighlight underlayColor='transparent' onPress={ this.signUp } >
-            <View style={styles.signup} >
-                <Text style={styles.greyFont}>Don't have an account?<Text style={styles.whiteFont}>  Sign Up</Text></Text>
-            </View>
-            </TouchableHighlight>
+
+       
         </View>
     );
   }
@@ -96,8 +70,8 @@ var styles = StyleSheet.create({
         position: 'absolute',
         left: 0,
         top: 0,
-        width: windowSize.width,
-        height: windowSize.height,
+        width: deviceScreen.width,
+        height: deviceScreen.height,
         backgroundColor:'#151B20'
     },
     header: {
@@ -113,7 +87,8 @@ var styles = StyleSheet.create({
     signin: {
         backgroundColor: '#00a4b5',
         padding: 20,
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom:20,
     },
     signup: {
       justifyContent: 'center',
@@ -160,4 +135,5 @@ var styles = StyleSheet.create({
       color: '#FFF'
     }
 })
-module.exports = Login;
+
+module.exports = ForgotPassword;

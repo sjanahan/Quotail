@@ -9,7 +9,7 @@ var {
 	TouchableHighlight,
 } = React;
 
-var global_styles = require('./Styles');
+var global_styles = require('../constants/Styles');
 
 
 var MessageView = React.createClass({
@@ -22,7 +22,6 @@ var MessageView = React.createClass({
 		var trade = this.getCurrentItem().name;
 		return(
 			<ScrollView style={ styles.container }>
-				
 				{this.props.item.messages.map(function(msg, i){
 					return (
 					 <TouchableHighlight onPress={ ()=> { AlertIOS.alert(
@@ -40,8 +39,6 @@ var MessageView = React.createClass({
 
 					</TouchableHighlight>);
 				})}
-
-				
 			</ScrollView>
 		);
 	}

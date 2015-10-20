@@ -1,4 +1,4 @@
-// ... imports
+var {Actions} = require('react-native-router-flux');
 
 var AuthenticatedComponent = function(ComposedComponent){
   return class AuthenticatedComponent extends React.Component {
@@ -6,7 +6,7 @@ var AuthenticatedComponent = function(ComposedComponent){
     static willTransitionTo(transition) {
       // This method is called before transitioning to this component. If the user is not logged in, we’ll send him or her to the Login page.
       if (!LoginStore.isLoggedIn()) {
-        transition.redirect(‘/login’);
+        Actions.login();
       }
     }
 
@@ -22,7 +22,8 @@ var AuthenticatedComponent = function(ComposedComponent){
       };
     }
 
-    // Here, we’re subscribing to changes in the LoginStore we created before. Remember that the LoginStore is an EventEmmiter.
+    // Here, we’re subscribing to changes in the LoginStore we created before. 
+    // Remember that the LoginStore is an EventEmmiter.
     componentDidMount() {
       LoginStore.addChangeListener(this._onChange.bind(this));
     }
@@ -33,7 +34,7 @@ var AuthenticatedComponent = function(ComposedComponent){
     }
 
     componentWillUnmount() {
-        LoginStore.removeChangeListener(this._onChange.bind(this));
+      LoginStore.removeChangeListener(this._onChange.bind(this));
     }
 
     render() {
