@@ -1,6 +1,4 @@
 var React = require('react-native');
-
-
 var {
 	View,
 	Component,
@@ -15,6 +13,7 @@ var {
 } = React;
 
 var MessageView = require('./MessageView');
+var DataService = require('../services/DataService');
 
 var WATCHLIST_ITEMS = [
 	{
@@ -33,8 +32,18 @@ const deviceScreen = Dimensions.get('window');
 
 var Watchlist = React.createClass({
 	componentWillMount(){
-		// network call to retrieve watchlist per user
-		this.updateDataSource(WATCHLIST_ITEMS);
+		//this.updateDataSource(WATCHLIST_ITEMS);
+		
+		var context = this;
+		DataService.getWatchlist().then(function(watchlist_from_backend){
+			console.log('using the watchlist items to populate view');
+			console.log(watchlist_from_backend);
+			console.log(WATCHLIST_ITEMS);
+			context.updateDataSource(watchlist)
+
+			//context.updateDataSource()
+		});
+		
 	},
 
 	getInitialState(){
@@ -169,4 +178,5 @@ var styles = StyleSheet.create({
   },
 });
 
-module.exports = Watchlist;
+var AuthenticatedWrapper = require('./AuthenticatedComponent');
+module.exports = AuthenticatedWrapper(Watchlist);

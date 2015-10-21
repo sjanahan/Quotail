@@ -5,20 +5,26 @@ var alt = require('../alt');
 
 class LoginActions{
   constructor(){
-    console.log("instantiating the loginactions");
+    LocalStorage.get('jwt', function(jwt){
+      if (jwt != null){
+        console.log("LoginActions constructor");
+        this.loginUser(jwt);
+      }
+    })
+    //console.log("instantiating the loginactions");
   }
 
   loginUser(jwt){
     //this.dispatch(jwt);
     // Go to the NavBar once the user is logged in
     //console.log(Actions.navBar);
-    console.log("logging in...");
+    //console.log("logging in...");
     
     this.dispatch(jwt);
 
     // save JWT in LocalStorage
     LocalStorage.set("jwt", jwt).then(function(){
-      console.log('set into LocalStorage');
+      //console.log('set into LocalStorage');
       //this.dispatch(jwt);
       RNFXActions.navBar();
       //return jwt;
@@ -26,7 +32,7 @@ class LoginActions{
       //return true;
     });
 
-    console.log(this);
+    //console.log(this);
 
     // Send the action to all stores through the Dispatcher
     /*AppDispatcher.dispatch({
@@ -51,6 +57,7 @@ class LoginActions{
     this.dispatch(1);
     LocalStorage.remove("jwt").then(function(){
       console.log('removing jwt from LocalStorage');
+      RNFXActions.login();
     });
   }
 }

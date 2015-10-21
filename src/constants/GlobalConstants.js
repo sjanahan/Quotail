@@ -8,6 +8,8 @@ var deviceScreen = Dimensions.get('window');
 var GlobalConstants = {
 
 	deviceScreen: deviceScreen,
+	screenHeight: deviceScreen.height,
+	screenWidth: deviceScreen.width,
 
 
 	colors:{

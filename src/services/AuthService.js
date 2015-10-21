@@ -28,8 +28,8 @@ var AuthService = function(){
 
   }
   self.login = function(email, password) {
-    console.log(email);
-    console.log(password);
+    //console.log(email);
+    //console.log(password);
     var body = querystring.stringify({
                 'email': email,
                 'password': password
@@ -65,11 +65,11 @@ var AuthService = function(){
       .then(ServiceUtils.checkStatus)
       .then(ServiceUtils.parseJSON)
       .then(function(json_res){
-        console.log(json_res);
+        //console.log(json_res);
         AlertIOS.alert(json_res.message + '\n' + email);
         Actions.login();
       }).catch(function(error){
-        console.log(error);
+        //console.log(error);
         AlertIOS.alert(error.toString());
       })
   }
@@ -87,8 +87,8 @@ var AuthService = function(){
 
   self.register = function(firstname, lastname, email,
            password, confirm_password){
-    console.log(password);
-    console.log(confirm_password);
+    //console.log(password);
+    //console.log(confirm_password);
     if (password !== confirm_password){
       AlertIOS.alert("Passwords do not match!");
       return;
@@ -110,7 +110,7 @@ var AuthService = function(){
       body:body,
     }
 
-    console.log(this);
+    //console.log(this);
     fetch(REGISTER_URL, Obj)      
       .then(ServiceUtils.checkStatus)
       .then(ServiceUtils.parseJSON)
@@ -125,7 +125,7 @@ var AuthService = function(){
 
   self.handleAuth = function(loginPromise) {
     return loginPromise.then(function(response) {
-      console.log(response);
+      //console.log(response);
         response.json().then(function(jsoned){
         if (jsoned.token){
           console.log(jsoned.token);
@@ -147,14 +147,14 @@ var AuthService = function(){
     //var context = this;
     var deferred = Q.defer();
     LocalStorage.get('jwt', 'string').then(function(jwt){
-      console.log(jwt);
+      //console.log(jwt);
       if (jwt != null){
         //LoginStore.set_jwt(jwt);
         LoginActions.loginUser(jwt);
-        console.log("jwt is not null");
+        //console.log("jwt is not null");
         deferred.resolve(true);
       }else{
-        console.log("no jwt for you, asshat");
+        //console.log("no jwt for you, asshat");
         deferred.resolve(false);
       }
     });

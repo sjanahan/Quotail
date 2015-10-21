@@ -46,7 +46,8 @@ const styles = StyleSheet.create({
 
 var AccountSettingsButton = React.createClass({
   goToAccountSettings(){
-    console.log('this is where account settings go');
+    console.log(this.props);
+    console.log('Hi');
 
   },
 
@@ -110,12 +111,15 @@ var Menu = React.createClass({
   render() {
     return (
         <ScrollView style={styles.menu}>
-          <AccountSettingsButton/>
-          <FilterButton getNavigator={this.props.getNavigator}/>
+          <AccountSettingsButton {...this.props}/>
+          <FilterButton {...this.props}/>
           <LogoutButton/>
         </ScrollView>
     );
   },
 });
 
-module.exports = Menu;
+// wrapper that checks LoginStore for valid jwt before rendering
+// also listens to changes on the store that conditionally render
+var AuthenticatedWrapper = require('./AuthenticatedComponent');
+module.exports = AuthenticatedWrapper(Menu);

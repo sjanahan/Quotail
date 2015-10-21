@@ -19,7 +19,7 @@ var MessageView = React.createClass({
 
 	render(){
 		//console.log(this.props);
-		var trade = this.getCurrentItem().name;
+		var trade = this.getCurrentItem().symbol;
 		return(
 			<ScrollView style={ styles.container }>
 				{this.props.item.messages.map(function(msg, i){
@@ -70,5 +70,8 @@ var styles = StyleSheet.create({
 	}
 })
 
+// wrapper that checks LoginStore for valid jwt before rendering
+// also listens to changes on the store that conditionally render
+var AuthenticatedWrapper = require('./AuthenticatedComponent');
 
-module.exports = MessageView;
+module.exports = AuthenticatedWrapper(MessageView);

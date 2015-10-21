@@ -17,8 +17,8 @@ var GlobalConstants = require('../constants/GlobalConstants');
 var Login = React.createClass({
   getInitialState: function() {
     return {
-      username: 'janahansivaraman@gmail.com',
-      password: 'muffin'
+      username: 'amajedi@gmail.com',
+      password: '!muffinY0'
     }
   },
 

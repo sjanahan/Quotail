@@ -36,18 +36,18 @@ var Launch = React.createClass({
       console.log('removing')
     });
     AuthService.isLoggedIn().then(function(bool){
-      console.log('callback');
-      console.log("Component did Mount");
+      //console.log('callback');
+      //console.log("Component did Mount");
       context.setState({
         isLoggedIn: bool
       });
-      console.log('after setState')
+      //console.log('after setState')
     });
   },
 
   render(){
-    var fs;
-    console.log(this.state.isLoggedIn);
+    var fs = <NavBar/>;
+    //console.log(this.state.isLoggedIn);
     if (this.state.isLoggedIn === true){
       fs = <NavBar/>;
     }else if (this.state.isLoggedIn === false){

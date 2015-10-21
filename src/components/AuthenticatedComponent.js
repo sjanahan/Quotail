@@ -1,53 +1,51 @@
+var React = require('react-native');
+var {
+  Component,
+  View,
+} = React;
+
+var connectToStores = require('alt/utils/connectToStores');
+var AltNativeContainer = require('/alt/AltNativeContainer');
+var LoginStore = require('../stores/LoginStore');
+var LoginActions = require('../actions/LoginActions');
 var {Actions} = require('react-native-router-flux');
 
-var AuthenticatedComponent = function(ComposedComponent){
-  return class AuthenticatedComponent extends React.Component {
+var AuthenticatedWrapper = function(ComposedComponent){
+  class AuthenticatedComponent extends React.Component {
 
-    static willTransitionTo(transition) {
-      // This method is called before transitioning to this component. If the user is not logged in, we’ll send him or her to the Login page.
-      if (!LoginStore.isLoggedIn()) {
-        Actions.login();
-      }
-    }
-
-    constructor() {
-      this.state = this._getLoginState();
-    }
-
-    _getLoginState() {
-      return {
-        userLoggedIn: LoginStore.isLoggedIn(),
-        user: LoginStore.user,
-        jwt: LoginStore.jwt
-      };
-    }
 
     // Here, we’re subscribing to changes in the LoginStore we created before. 
     // Remember that the LoginStore is an EventEmmiter.
-    componentDidMount() {
-      LoginStore.addChangeListener(this._onChange.bind(this));
+    componentWillMount() {
+      //console.log(this);
+      console.log("checking auth");
+      /*This method is called before transitioning to this component. 
+      If the user is not logged in, we’ll send him or her to the Login page.*/
+      if (!LoginStore.isLoggedIn()) {
+        LoginActions.logout();
+      }else{
+        console.log(LoginStore.get_jwt())
+      }
     }
 
-    // After any change, we update the component’s state so that it’s rendered again.
-    _onChange() {
-      this.setState(this._getLoginState());
+    static getStores(){
+      return[LoginStore];
     }
 
-    componentWillUnmount() {
-      LoginStore.removeChangeListener(this._onChange.bind(this));
+    static getPropsFromStores(){
+      return LoginStore.getState();
     }
+
 
     render() {
       return (
-      <ComposedComponent
-        {...this.props}
-        user={this.state.user}
-        jwt={this.state.jwt}
-        userLoggedIn={this.state.userLoggedIn} />
+        <ComposedComponent {...this.props} />
       );
     }
   }
+
+  return connectToStores(AuthenticatedComponent);
 };
 
 
-module.exports = AuthenticatedComponent;
+module.exports = AuthenticatedWrapper;

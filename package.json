@@ -8,6 +8,7 @@
   "dependencies": {
     "alt": "^0.17.4",
     "clamp": "^1.0.1",
+    "events": "^1.1.0",
     "http": "0.0.0",
     "jwt-decode": "^1.4.0",
     "q": "^1.4.1",

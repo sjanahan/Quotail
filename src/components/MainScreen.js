@@ -33,6 +33,7 @@ var clamp = require('clamp');
 var Q = require('q');
 
 var LoginStore = require('../stores/LoginStore');
+var LoginActions = require('../actions/LoginActions');
 var DataService = require('../services/DataService');
 
 const People = [
@@ -42,25 +43,30 @@ const People = [
 var STACK_OF_CARDS = [
   {
   name: 'Cheniere Energy, Inc.',
+  ticker:'LNG',
   id: 3423, // for fetching from chartmill
   filter_tags: ['onTheBid']
   },
   {name: 'TECO Energy', // for display purposes
+  ticker:'TE',
   id: 10797, // for fetching from chartmill
   filter_tags: ['TECO scan']
   },
   {
   name: 'Media General',
+  ticker:'MEG',
   id: 8820, // for fetching from chartmill
   filter_tags: ['TECO scan']
   },
   {
   name:'Cablevision',
+  ticker:'CVC',
   id: 8384, // for fetching from chartmill
   filter_tags: ['TECO scan']
   },
   {
   name: 'Comerica Incorporated',
+  ticker:'CMA',
   id: 5835, // for fetching from chartmill
   filter_tags: ['onTheBid']
   },
@@ -105,7 +111,17 @@ class MainScreen extends Component{
 
 
   componentDidMount() {
-    this._animateEntrance();
+    var context = this;
+    var stack_of_cards = DataService.getHits().then(function(data){
+      console.log("THE STACK IS BACK");
+      console.log(stack_of_cards);
+
+       context._animateEntrance();
+    });
+    
+
+
+   
   }
 
   _animateEntrance() {
@@ -116,6 +132,7 @@ class MainScreen extends Component{
   }
 
   componentWillMount() {
+
       this.panResponder = PanResponder.create({
       onMoveShouldSetResponderCapture: () => true,
       onMoveShouldSetPanResponderCapture: () => true,
@@ -144,7 +161,10 @@ class MainScreen extends Component{
         if (Math.abs(this.state.pan.x._value) > SWIPE_THRESHOLD) {
           if (velocity > 0){
             // make some network call
-            this.state.yes_watchlist.push(this.state.card);
+            DataService.addToWatchlist(this.state.card.ticker).then(function(result){
+              console.log("added to watchlist");
+            });
+            //this.state.yes_watchlist.push(this.state.card);
           }else{
             // make some network call
             this.state.no_watchlist.push(this.state.card);
@@ -178,6 +198,11 @@ class MainScreen extends Component{
     this._animateEntrance();
   }
 
+ /* Store events */
+  _onChange() {
+    this.setState(getStateFromStore());
+  }
+
 
   render() {
     let { pan, enter, id } = this.state;
@@ -198,10 +223,11 @@ class MainScreen extends Component{
     let nopeScale = pan.x.interpolate({inputRange: [-150, 0], outputRange: [1, 0.5], extrapolate: 'clamp'});
     let animatedNopeStyles = {transform: [{scale: nopeScale}], opacity: nopeOpacity};
     return (
+
       <View style={styles.container} menuActions={this.props.menuActions}>
         <Animated.View style={[styles.card, animatedCardStyles]} {...this.panResponder.panHandlers}>
           
-          <Image resizeMode={'contain'} style={styles.graph} source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=350&sheight=120&id='+this.state.card.id+'&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}>
+          <Image resizeMode={'contain'} style={styles.graph}>
           <Text style={[styles.welcome, GlobalStyles.light_gray]} textAlign={'center'}> {this.state.card.name} </Text>
          
           </Image>
@@ -350,4 +376,13 @@ var styles = StyleSheet.create({
   }
 });
 
-module.exports = MainScreen;
+/*
+          <Image resizeMode={'contain'} style={styles.graph} 
+          //source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=350&sheight=120&id='+this.state.card.id+'&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}
+          >*/
+
+
+// wrapper that checks LoginStore for valid jwt before rendering
+// also listens to changes on the store that conditionally render
+var AuthenticatedWrapper = require('./AuthenticatedComponent');
+module.exports = AuthenticatedWrapper(MainScreen);

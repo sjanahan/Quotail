@@ -30,7 +30,7 @@ class LocalStorage {
   }
 
   get(key, type) {
-    console.log("GETTING " + key + " " + type);
+    //console.log("GETTING " + key + " " + type);
     //need type to properly parse string.
     return AsyncStorage.getItem(DEVICE_STORAGE_PREFIX + key)
     .then(value => {
@@ -39,7 +39,7 @@ class LocalStorage {
   }
 
   set(key, value) {
-    console.log(key + " " + value);
+    //console.log(key + " " + value);
     var serializedValue = typeof value === "object" ? JSON.stringify(value) : value.toString();
 
     return AsyncStorage.setItem(DEVICE_STORAGE_PREFIX + key, serializedValue)

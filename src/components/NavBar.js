@@ -13,6 +13,10 @@ var SideMenu = require('react-native-side-menu');
 var Menu = require('./Menu');
 var MainScreen = require('./MainScreen');
 
+// wrapper that checks LoginStore for valid jwt before rendering
+// also listens to changes on the store that conditionally render
+var AuthenticatedWrapper = require('./AuthenticatedComponent');
+
 var NavBar = React.createClass({
   goToWatchlist(){
     var Watchlist = require ('./Watchlist');
@@ -40,6 +44,7 @@ var NavBar = React.createClass({
   },
 	
 	render(){
+    console.log(this.props);
 		return (
 	      <SideMenu ref="sidemenu" touchToClose={true} disableGestures={true} menu={<Menu getNavigator={this.getNavigator}/>}>
 	        	<NavigatorIOS
@@ -67,6 +72,8 @@ var styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-});
+})
+;
+
 
 module.exports = NavBar;
