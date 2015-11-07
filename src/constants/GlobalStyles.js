@@ -16,6 +16,14 @@ var GlobalStyles = StyleSheet.create({
 		color:'#AAAAAA'
 	},
 
+	green:{
+		color:'green'
+	},
+
+	red:{
+		color:'red'
+	},
+
 	darker_gray:{
 		color:'#668086'
 	},

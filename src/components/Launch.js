@@ -46,7 +46,7 @@ var Launch = React.createClass({
   },
 
   render(){
-    var fs = <NavBar/>;
+    var fs;// = <NavBar/>;
     //console.log(this.state.isLoggedIn);
     if (this.state.isLoggedIn === true){
       fs = <NavBar/>;

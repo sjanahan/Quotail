@@ -31,16 +31,19 @@ var {
 
 var clamp = require('clamp');
 var Q = require('q');
+var _ = require('underscore');
 
 var LoginStore = require('../stores/LoginStore');
 var LoginActions = require('../actions/LoginActions');
 var DataService = require('../services/DataService');
 
+var FormatUtils = require('../services/FormatUtils');
+
 const People = [
   'white',
 ]
 
-var STACK_OF_CARDS = [
+/*var STACK_OF_CARDS = [
   {
   name: 'Cheniere Energy, Inc.',
   ticker:'LNG',
@@ -75,7 +78,13 @@ var STACK_OF_CARDS = [
   id: 0, // for fetching from chartmill
   filter_tags: ['NONE']
   }
-  ];
+  ];*/
+
+var no_more_cards =   {
+  name: 'N/A',
+  id: 0, // for fetching from chartmill
+  scan_names: ['NONE']
+  };
 
 var querystring = require ('querystring');
 
@@ -87,38 +96,53 @@ class MainScreen extends Component{
     this.state = {
       pan: new Animated.ValueXY(),
       enter: new Animated.Value(0.5),
-      person: People[0],
-      card: STACK_OF_CARDS[0],
-      yes_watchlist:[],
-      no_watchlist:[],
+      //person: People[0],
+      STACK_OF_CARDS: [],
+      card: null,
     }
   }
 
   goToNextPerson() {
-    let currentPersonIdx = People.indexOf(this.state.person);
-    let newIdx = currentPersonIdx + 1;
+    //let currentPersonIdx = People.indexOf(this.state.person);
+    //console.log(currentPersonIdx);
+
+    //let newIdx = currentPersonIdx + 1;
     
 
-    let currentCardIndex = STACK_OF_CARDS.indexOf(this.state.card)
-    let no_more_tickers_index = STACK_OF_CARDS.length - 1;
+    let currentCardIndex = this.state.STACK_OF_CARDS.indexOf(this.state.card);
+    if (currentCardIndex == -1){
+      currentCardIndex == this.state.STACK_OF_CARDS.length;
+    }
+
+    console.log(currentCardIndex);
+    let no_more_tickers_index = this.state.STACK_OF_CARDS.length - 1;
     let newCardIndex = currentCardIndex + 1;
+    let card = newCardIndex > no_more_tickers_index? no_more_cards: this.state.STACK_OF_CARDS[newCardIndex];
 
     this.setState({
-      person: People[newIdx > People.length - 1 ? 0 : newIdx],
-      card: STACK_OF_CARDS[newCardIndex > no_more_tickers_index? no_more_tickers_index: newCardIndex],
+      card: card,
     });
   }
 
 
   componentDidMount() {
     var context = this;
-    var stack_of_cards = DataService.getHits().then(function(data){
+    DataService.getHits().then(function(data){
       console.log("THE STACK IS BACK");
-      console.log(stack_of_cards);
+      console.log(data);
 
-       context._animateEntrance();
+      var first_card = data.length == 0 ? no_more_cards: data[0];
+
+      context.setState({
+        STACK_OF_CARDS : data,
+        card:first_card,
+      });
+
+
+      context._animateEntrance();
     });
     
+    this._animateEntrance();
 
 
    
@@ -160,14 +184,10 @@ class MainScreen extends Component{
 
         if (Math.abs(this.state.pan.x._value) > SWIPE_THRESHOLD) {
           if (velocity > 0){
-            // make some network call
-            DataService.addToWatchlist(this.state.card.ticker).then(function(result){
-              console.log("added to watchlist");
-            });
-            //this.state.yes_watchlist.push(this.state.card);
+            this.swipeRight(this.state.card.ticker);
           }else{
-            // make some network call
-            this.state.no_watchlist.push(this.state.card);
+            this.swipeLeft(this.state.card.ticker);
+            
           }
           Animated.decay(this.state.pan.x, {
             velocity: velocity,
@@ -190,8 +210,6 @@ class MainScreen extends Component{
   }
 
   _resetState() {
-    console.log(this.state.yes_watchlist);
-    console.log(this.state.no_watchlist);
     this.state.pan.setValue({x: 0, y: 0});
     this.state.enter.setValue(0);
     this.goToNextPerson();
@@ -201,6 +219,29 @@ class MainScreen extends Component{
  /* Store events */
   _onChange() {
     this.setState(getStateFromStore());
+  }
+
+  swipeRight(card){
+    console.log("swipe right");
+    _.each(card.hit_ids, function(hit_id){
+      DataService.setAsDelivered(hit_id);
+    })
+
+    DataService.addToWatchlist(card).then(function(){
+      console.log("...whatever was swiped right was added");
+      DataService.addToWatchlistHits(card).then(function(){
+        console.log("added to watchlist hits");
+      });
+    });
+  }
+
+  swipeLeft(card){
+    console.log("swiped left");
+    console.log(card.hit_ids);
+    
+    _.each(card.hit_ids, function(hit_id){
+      DataService.setAsDelivered(hit_id);
+    })
   }
 
 
@@ -222,56 +263,81 @@ class MainScreen extends Component{
     let nopeOpacity = pan.x.interpolate({inputRange: [-150, 0], outputRange: [1, 0]});
     let nopeScale = pan.x.interpolate({inputRange: [-150, 0], outputRange: [1, 0.5], extrapolate: 'clamp'});
     let animatedNopeStyles = {transform: [{scale: nopeScale}], opacity: nopeOpacity};
-    return (
+    if (this.state.card == null){
+      var Loading = require('./Loading');
+      return <Loading/>
+    }else if (this.state.card == no_more_cards){
+      var NoMoreCards = require('./NoMoreCards');
+      return <NoMoreCards/>
 
-      <View style={styles.container} menuActions={this.props.menuActions}>
-        <Animated.View style={[styles.card, animatedCardStyles]} {...this.panResponder.panHandlers}>
+    }else{
+      
+      if ((this.state.card.type === "C" && this.state.card.side === "B") ||
+        (this.state.card.type === "P" && this.state.card.side == "S")) {
+        this.state.card.isBullish = true;
+      } else if ((this.state.card.type === "C" && this.state.card.side === "S") ||
+        (this.state.card.type === "P" && this.state.card.side == "B")) {
+        this.state.card.isBearish = true;
+      }else{
+        this.state.card.isNeutral = true;
+      }
+
+      console.log(this.state.card);
+
+
+      return (
+        <View style={styles.container} menuActions={this.props.menuActions}>
+          <Animated.View style={[styles.card, animatedCardStyles]} {...this.panResponder.panHandlers}>
+            
+            <Image resizeMode={'contain'} style={styles.graph}>
+            <Text style={[styles.welcome, 
+                          this.state.card.isNeutral==true && GlobalStyles.light_gray,
+                          this.state.card.isBullish==true && GlobalStyles.green,
+                          this.state.card.isBearish==true && GlobalStyles.red]} textAlign={'center'}> {FormatUtils.convertAlertToText(this.state.card)} </Text>
+           
+            </Image>
+
+            <View style={styles.filter_container}>
+             {this.state.card.scan_names.map(function(scan_name, i){
+                return <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]} key={i}> {scan_name}</Text>
+                       
+             })} 
+             </View>
+            
+          </Animated.View>
           
-          <Image resizeMode={'contain'} style={styles.graph}>
-          <Text style={[styles.welcome, GlobalStyles.light_gray]} textAlign={'center'}> {this.state.card.name} </Text>
-         
-          </Image>
+          <View style={styles.yup_or_no}>
+            <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> {this.swipeLeft(this.state.card); this._resetState();}}>
+              <View style={styles.no_button}><Image source={require('image!no')}/></View>
+            </TouchableHighlight>
 
-          <View style={styles.filter_container}>
-           {this.state.card.filter_tags.map(function(filter, i){
-              return <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]} key={i}> {filter}</Text>
-                     
-           })} 
-           </View>
-          
-        </Animated.View>
-        
-        <View style={styles.yup_or_no}>
-          <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> {this.state.no_watchlist.push(this.state.card); this._resetState();}}>
-            <View style={styles.no_button}><Image source={require('image!no')}/></View>
-          </TouchableHighlight>
+            <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> { AlertIOS.alert(
+                    'Tail trade?',
+                    `${this.state.card.name}`,
+              [
+                {text: 'Dismiss'},
+                {text: 'Yes', onPress: () => { this._resetState(); } } ,
+              ] 
+            )}} >
+              <View style={ styles.tail_button }><Image source={ require('image!tail') }/></View>
+            </TouchableHighlight>
+            
+            <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> {this.swipeRight(this.state.card); this._resetState();}}>
+              <View style={styles.yes_button}><Image source={require('image!yes')}/></View>
+            </TouchableHighlight>
 
-          <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> { AlertIOS.alert(
-                  'Tail trade?',
-                  `${this.state.card.name}`,
-            [
-              {text: 'Dismiss'},
-              {text: 'Yes', onPress: () => { this._resetState(); } } ,
-            ] 
-          )}} >
-            <View style={ styles.tail_button }><Image source={ require('image!tail') }/></View>
-          </TouchableHighlight>
-          
-          <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> {this.state.yes_watchlist.push(this.state.card); this._resetState();}}>
-            <View style={styles.yes_button}><Image source={require('image!yes')}/></View>
-          </TouchableHighlight>
+          <Animated.View style={[styles.nope, animatedNopeStyles]}>
+            <Text style={styles.nopeText}>Don't Watch!</Text>
+          </Animated.View>
 
-        <Animated.View style={[styles.nope, animatedNopeStyles]}>
-          <Text style={styles.nopeText}>Don't Watch!</Text>
-        </Animated.View>
-
-        <Animated.View style={[styles.yup, animatedYupStyles]}>
-          <Text style={styles.yupText}>Add to Watch!</Text>
-        </Animated.View>
+          <Animated.View style={[styles.yup, animatedYupStyles]}>
+            <Text style={styles.yupText}>Add to Watch!</Text>
+          </Animated.View>
+          </View>
         </View>
-      </View>
-  
-    );
+    
+      );
+    }
     
   }
 

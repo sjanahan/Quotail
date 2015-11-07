@@ -7,6 +7,8 @@ var {
 	StyleSheet,
   ListView,
   PixelRatio,
+  TouchableHighlight,
+  Image,
 } = React;
 
 
@@ -19,10 +21,14 @@ var DataService = require('../services/DataService');
 var FilterPage = React.createClass({
   getInitialState(){
     console.log("initializing filterlist");
+    var ds = new ListView.DataSource({
+              rowHasChanged:(r1,r2) => r1 !== r2
+            });
     return {
-      dataSource: new ListView.DataSource({
-        rowHasChanged:(r1,r2) => r1 !== r2
-      })
+      filterlist: [],
+      dataSource:ds, 
+      
+      //filterlist:[],
     };
   },
 
@@ -31,6 +37,7 @@ var FilterPage = React.createClass({
     // network call for filter names and definitions
     DataService.getFilters().then(function(data){
       console.log('the filter page got the list');
+      //context.state.filterlist = data;
       context.updateDataSource(data);
 
       console.log("set the state damnit");
@@ -41,19 +48,65 @@ var FilterPage = React.createClass({
 
   updateDataSource(data){
     this.setState({
-      dataSource: this.state.dataSource.cloneWithRows(data)
+      filterlist: data,
+      dataSource: this.state.dataSource.cloneWithRows(data),
     })
   },
 
-  renderRow(item){
+  toggleBolt(i){
+    DataService.toggleScanActivation(this.state.filterlist[i].metadata.id);
+    
+
+    if (this.state.filterlist[i].metadata.isActivated == true){
+      console.log("deactivating scan");
+    }else{
+      console.log("activting scan");
+    }
+
+    // toggling isActivated on that scan name
+    this.state.filterlist[i].metadata.isActivated = !this.state.filterlist[i].metadata.isActivated;
+
+    var copy = this.state.filterlist.slice();
+    copy[i] = {
+      metadata : copy[i].metadata,
+      definition: copy[i].definition,
+    };
+    
+    this.updateDataSource(copy);
+  },
+
+  renderBolt(item, i){
+    //console.log("rerendering  " +  i);
+    if (item.metadata.isActivated === true){
+      return(
+        <TouchableHighlight underlayColor={'white'} onPress={ ()=>{this.toggleBolt(i);} }>
+          <Image source={require('image!filter_activated')}/>
+        </TouchableHighlight>
+      );
+    } else {
+      return(
+        <TouchableHighlight underlayColor={'white'} onPress={ ()=>{this.toggleBolt(i);} }>
+          <Image source={require('image!filter_deactivated')}/>
+        </TouchableHighlight>
+      );
+    }
+  },
+
+  renderRow(item, sec, i){
+    //console.log(item);
+    //console.log(sec);
+    //console.log(i);
+
+    //console.log(this.state.dataSource);
     return(
           <View>
           <View style={ styles.row }> 
             <View style={ styles.textContainer }>
               <Text style={ styles.name } numberOfLines={ 1 }>
-                { item.metadata.name }
+                { item.metadata.name } 
               </Text>
             </View>
+            {this.renderBolt(item, i)}
           </View> 
           <View style={ styles.cellBorder } />
           
@@ -108,7 +161,7 @@ var styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 2,
     color:'#668086',
-    alignItems:'center'
+    alignItems:'center',
   },
   time: {
     position: 'absolute',
