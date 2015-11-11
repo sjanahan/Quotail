@@ -69,7 +69,7 @@ var FilterButton = React.createClass({
     const FilterPage = require ('./FilterPage');
     this.props.getNavigator().push({
       component: FilterPage,
-      title: 'My Filters',
+      title: 'My Scans',
     });
 
   },
@@ -79,7 +79,7 @@ var FilterButton = React.createClass({
       <TouchableHighlight
         onPress={this.goToFilters}>
         <View style={styles.menu_item}>
-          <Text style={styles.item}>Filters</Text>
+          <Text style={styles.item}>Scans</Text>
         </View>
       </TouchableHighlight>
     );    

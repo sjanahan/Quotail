@@ -12,6 +12,7 @@ var {
 var SideMenu = require('react-native-side-menu');
 var Menu = require('./Menu');
 var MainScreen = require('./MainScreen');
+var GlobalConstants = require('../constants/GlobalConstants');
 
 // wrapper that checks LoginStore for valid jwt before rendering
 // also listens to changes on the store that conditionally render
@@ -51,9 +52,9 @@ var NavBar = React.createClass({
 	            ref = "nav"
 	        	  shouldUpdate={true}
 	        	  style={styles.container}
-	            barTintColor='#00a4b5'
-	            tintColor='white'
-	            titleTextColor='white'
+	            barTintColor={GlobalConstants.colors.gray}
+	            tintColor={GlobalConstants.colors.text_gray}
+	            titleTextColor={GlobalConstants.colors.text_gray}
 	        	  initialRoute={{
 	    			  component: MainScreen,
 	    			  title:'Quotail',

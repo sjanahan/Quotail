@@ -9,7 +9,6 @@ var {
 	ListView,
 	Image,
 	TouchableHighlight,
-	
 } = React;
 
 var MessageView = require('./MessageView');
@@ -17,8 +16,18 @@ var DataService = require('../services/DataService');
 var _ = require('underscore');
 var GlobalConstants = require('../constants/GlobalConstants');
 var Accordion = require('react-native-accordion');
+
+//var Accordion = require('react-native-collapsible/Accordion');
 var NoWatchlistItems = require('./NoWatchlistItems');
 var Loading = require('./Loading');
+
+var SwipeOut = require('react-native-swipeout');
+
+var ListItem = require('react-native-listitem');
+
+var ContractList = require('./ContractList');
+var tweenState = require('react-tween-state');
+
 
 
 const deviceScreen = Dimensions.get('window');
@@ -33,15 +42,18 @@ var Watchlist = React.createClass({
 
 	getInitialState(){
 		console.log("initializing watchlist");
+  		//  datasource rerendered when change is made (used to set Swipeout to active)
+  		var ds = new ListView.DataSource({rowHasChanged: (row1, row2) => true})
+
 		return {
-			watchlist : null,
-			dataSource: new ListView.DataSource({
-				rowHasChanged:(r1,r2) => r1 !== r2
-			})
-		};
+			watchlist:null,
+		    dataSource: ds
+		  }
 	},
 
+
 	openChat(item){
+		console.log("ONPRESSED")
 		this.props.navigator.push({
       		title: `${item.ticker} Hits`,
       		component: MessageView,
@@ -50,8 +62,30 @@ var Watchlist = React.createClass({
 
 	},
 
-	removeContract(contract){
-		console.log("GSFGFSGFS");
+
+
+	/*handleSwipeout(sectionID, rowID) {
+	  console.log(this.refs);
+	  //this.refs.accordian.open();
+	  var copy = this.state.watchlist.slice();
+	  
+	  for (var i = 0; i < copy.length; i++) {
+	    if (i != rowID) copy[i].active = false
+	    else copy[i].active = !copy[i].active
+	  }
+	  this.updateDataSource(copy)
+	},*/
+
+	handleExpand(sectionID, rowID) {
+	  console.log(this.refs);
+	  //this.refs.accordian.open();
+	  var copy = this.state.watchlist.slice();
+	  
+	  for (var i = 0; i < copy.length; i++) {
+	    if (i != rowID) copy[i].show_contracts = false
+	    else copy[i].show_contracts = !copy[i].show_contracts
+	  }
+	  this.updateDataSource(copy)
 	},
 
 	updateDataSource(data){
@@ -61,44 +95,39 @@ var Watchlist = React.createClass({
 			watchlist: data,
 			dataSource: this.state.dataSource.cloneWithRows(data),
 		});
+
+		console.log(this.state.watchlist);
 	},
 
-	
-	/*renderContracts(messages){
-		_.each(messages, function(message){
-			return (
-				<Text style={ styles.lastMessage } numberOfLines={ messages.length }> 
-					{message} 
-				</Text>
-			);
-		});
-	},*/
 
-	/*<Text style={ styles.lastMessage } numberOfLines={ item.messages.length }>
-		                  		HI{"\n"}thisisatest.{"\n"}{"\n"}{"\n"}{"\n"}
-		                  	</Text>*/
-		               /*<Image
-							source={ require('image!bell') }
-							style={ styles.cellImage }
-						/> */
-	renderContracts(msg){
-		console.log(msg);
+	/*renderContracts(msg){
+		//console.log(msg);
 		var context = this;
 		
 			return(
 				<View style= {styles.contractRow} >
-	        		<TouchableHighlight onPress={ ()=> {context.removeContract("FDSFSD");} } >
-	        			<Image style={ styles.removeImage } source={ require('image!remove') }/>
-					</TouchableHighlight> 
 					<Text style={ styles.lastMessage } numberOfLines={ 1 }>
 						{msg}
 					</Text>
 				</View>
 			);
 			
+	},*/
+
+	handleSwipeout(sectionID, watchlist_row_index, rowID) {
+	  console.log("HANDLING SWIPEOUT");
+	  console.log(watchlist_row_index + " " + rowID);
+	  var copy = this.state.watchlist.slice();
+	  
+	  for (var i = 0; i < copy[watchlist_row_index].messages.length; i++) {
+	    if (i != rowID) copy[watchlist_row_index].messages[i].active = false
+	    else copy[watchlist_row_index].messages[i].active = true
+	  }
+	  this.updateDataSource(copy)
 	},
 
-	renderRow(item){
+
+	renderRow(item, sec, i){
 		console.log(item);
 		var context = this;
 		var numAlertsText;
@@ -108,53 +137,135 @@ var Watchlist = React.createClass({
 			numAlertsText = <Text style={ styles.numAlerts} > {item.new_hits} </Text>
 		}
 
-		var header = (
-			//<TouchableHighlight onPress={ this.openChat.bind(this, item) }>
-				<View>
-				<View style={ styles.row }>
-					<View style={ styles.textContainer }>
-						<Text style={ styles.name }> {numAlertsText}     { item.ticker } </Text>
-					</View>
+		/*var swipeoutBtns = [
+  		{
+  			backgroundColor:GlobalConstants.colors.red,
+    		text: 'Delete',
+    		onPress: ()=>{this.removeTicker(i)},
+  		}];*/
 
-					<TouchableHighlight onPress={ this.openChat.bind(this, item) }>
-					<Text> > </Text>
-					</TouchableHighlight>
+  		//var swipeoutBtns = [];
 
-				</View>	
-					<View style={ styles.cellBorder } />
-					
-				</View>);
-
-		console.log(header);
-			//</TouchableHighlight>); 
-
-		//var content = (
-
-						
-		var content = (item.messages.map(function(msg, i){
-		                	return context.renderContracts(msg);
-		                }));
-
-		//var content = (<Text>"LOL"</Text>);
-
-		//var content = this.renderContracts(item);
-
-
-
-			return (
-				<Accordion
-					header = {header}
-					content={content}
-					easing="easeOutCubic" />
-			);
-					
+  		var goToMessageThread=(
+			<TouchableHighlight onPress={ this.openChat.bind(this, item) }>
+				<Text>></Text>
+			</TouchableHighlight>
 			
+		);
 
-	
+  		var plus_or_minus;
+		if (item.show_contracts){
+			plus_or_minus = (<Text style={styles.expand}> -  </Text>);
+		}else{
+			plus_or_minus = (<Text style={styles.expand}> > </Text>);
+		}
+		
+		/*var headerContent =  (
+			
+			<SwipeOut 
+				right={swipeoutBtns}
+				rowID={i}
+          		close={!item.active}
+          		onOpen={(sec, i) => this.handleSwipeout(sec, i)}>
+          		<TouchableHighlight onPress={ this.openChat.bind(this, item) }> 
+          		<View style={ styles.row }>
+          			<TouchableHighlight onPress={()=>{this.handleExpand(sec, i)}}>
+          				{plus_or_minus}
+          			</TouchableHighlight>
+					<View style={ styles.textContainer }>
+						<Text style={ styles.name }>{item.ticker } </Text>
+					</View>
+					{numAlertsText}
+				</View>	
+				</TouchableHighlight > 
+				<View style={ styles.cellBorder } />
+			
+			</SwipeOut>
+			
+			
+		);*/
+
+
+
+		var headerContent =  (
+			<View>
+          		<TouchableHighlight onPress={ this.openChat.bind(this, item) }> 
+          		<View style={ styles.row }>
+          			<TouchableHighlight onPress={()=>{this.handleExpand(sec, i)}}>
+          				{plus_or_minus}
+          			</TouchableHighlight>
+					<View style={ styles.textContainer }>
+						<Text style={ styles.name }>{item.ticker } </Text>
+					</View>
+					{numAlertsText}
+				</View>	
+				</TouchableHighlight > 
+				<View style={ styles.cellBorder } />
+			</View>	
+		);
+
+		console.log("How many messages?" + item.messages.length);
+		
+		if (!item.show_contracts){
+			content = (<View></View>);
+		}else{
+			content = (<ContractList contracts={item.messages} handleSwipeout={this.handleSwipeout} removeContract={this.removeContract} watchlist_row={i}/>);
+		}
+
+		//console.log("made contract list");
+		//var accordian = (
+			
+		return (
+		<View>
+			{headerContent}
+			{content}
+		</View>
+		);
+	},
+
+
+	removeTicker(i){
+		console.log("REMOVING " + this.state.watchlist[i].ticker);
+
+		DataService.deleteTickerFromWatchlist(this.state.watchlist[i].ticker).then(function(data){
+			console.log('removed from watchlist');
+
+
+		});
+		var copy = this.state.watchlist.slice();
+	    copy.splice(i,1);
+	    
+	    this.updateDataSource(copy);
+	},
+
+	removeContract(watchlist_row_index, contract_index){
+		console.log("!!" + watchlist_row_index + " "  + contract_index);
+
+		console.log(this.state.watchlist[watchlist_row_index].messages[contract_index].contract_symbol);
+		DataService.deleteContractFromWatchlist(this.state.watchlist[watchlist_row_index].messages[contract_index].contract_symbol).then(function(data){
+			console.log('removed contract from watchlist');
+
+
+		});
+
+		//network call to DB
+		var copy = this.state.watchlist.slice();
+		console.log("how many contracts?" + copy[watchlist_row_index].messages.length);
+		
+		copy[watchlist_row_index].messages[contract_index] = {};
+		copy[watchlist_row_index].messages.splice(contract_index,1);
+
+		if (copy[watchlist_row_index].messages.length == 0){
+			this.removeTicker(watchlist_row_index);
+		}else{
+			console.log("how many contracts? after removing" + copy[watchlist_row_index].messages.length);
+	    	this.updateDataSource(copy);
+		}
+
+
 	},
 
 	render(){
-		//console.log(this.state.watchlist.length);
 		if (this.state.watchlist == null){
 			return <Loading/>
 		}
@@ -164,7 +275,11 @@ var Watchlist = React.createClass({
 		else{
 			return(
 				<View style={styles.container} >
-					<ListView dataSource={ this.state.dataSource } renderRow={ this.renderRow } />
+					<ListView
+						ref={component => this._root = component}{...this.props} 
+						initialListSize={this.state.watchlist.length} 
+						dataSource={ this.state.dataSource } 
+						renderRow={ this.renderRow } />
 				</View>
 			);
 		}
@@ -172,15 +287,6 @@ var Watchlist = React.createClass({
 
 }); 
 
-/*
-{WATCHLIST_ITEMS.map(function(item, i){
-					return( 
-						<View style={styles.msg_list}>
-							<Text style={styles.welcome} key={i}> {item.ticker} </Text>
-						</View>
-					);
-				})}
-*/
 
 var styles = StyleSheet.create({
   container: {
@@ -191,10 +297,13 @@ var styles = StyleSheet.create({
     width:deviceScreen.width,
     height:deviceScreen.height,
   },
+  expand : {
+  	fontSize: 22,
+  },
   row:{
   	flex:1,
   	alignItems:'center',
-  	backgroundColor:'white',
+  	backgroundColor:GlobalConstants.colors.gray_dark,
   	flexDirection:'row',
   	padding:10,
   	width:deviceScreen.width,
@@ -202,12 +311,11 @@ var styles = StyleSheet.create({
 
   numAlertsView:{
   	backgroundColor:GlobalConstants.colors.yellow,
-  	borderRadius:4,
   },
   numAlerts:{
   	backgroundColor:GlobalConstants.colors.yellow,
   	color:GlobalConstants.colors.gray_dark,
-  	textAlign:'right'
+  	textAlign:'center'
   },
   contractRow:{
   	flex:1,

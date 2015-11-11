@@ -4,16 +4,16 @@ var{
   AlertIOS,
 } = React;
 
-var LoginConstants = require('../constants/LoginConstants');
+var DataConstants = require('../constants/DataConstants');
 var Q = require('q');
 var {
-  BASE_URL,
-  GET_CARDS_URL,
-  GET_WATCHLIST_URL,
-  ADD_TO_WATCHLIST_URL,
-  DELETE_FROM_WATCHLIST_URL,
-  GET_FILTER_LIST,
-} = LoginConstants;
+  	ALERT_URL,
+ 	CHAIN_URL,
+ 	SCAN_URL,
+ 	WATCHLIST_URL,
+ 	WATCHLIST_TICKER_URL,
+ 	WATCHLIST_CONTRACT_URL,
+} = DataConstants;
 
 var querystring = require('querystring');
 var LoginActions = require ('../actions/LoginActions');
@@ -23,7 +23,7 @@ var LocalStorage = require('../stores/LocalStorage');
 var LoginStore = require('../stores/LoginStore');
 
 class DataService{
-	do_request(type, path, query_params){
+	do_request(type, path, query_params, accept){
 		var deferred = Q.defer();
 		var url = path;
 		var jwt = LoginStore.get_jwt();
@@ -63,9 +63,53 @@ class DataService{
 	    return deferred.promise;
 	}
 
-	getHits(){
+	getGraph(contract_symbol){
+		console.log('fetching graphs');
 		var deferred = Q.defer();
-		this.do_request("GET", GET_CARDS_URL).then(function(data){
+		var jwt = LoginStore.get_jwt();
+
+		//console.log(url);
+		console.log(jwt);
+
+		//console.log(url);
+
+		//console.log(query_params);
+
+    	/*var body = querystring.stringify({
+                'body': body,
+           });*/
+
+		var query_params;
+	    
+	    var Obj = {
+	      method: "GET",
+	      headers: {
+	      	'Accept': 'image/png',
+        	'Content-Type': 'application/x-www-form-urlencoded',
+	        'Authorization': jwt,
+	      },
+	      body:query_params
+    	};
+
+    	console.log(Obj);
+
+	    fetch(CHAIN_URL + 'graph/' + contract_symbol + '?height=400&width=350&jwt=', Obj).then(function (res) {
+	      console.log("making authenticated request");
+	      /*res.json().then(function(data){
+	      	 deferred.resolve(data);
+	      })*/
+
+	    deferred.resolve(res);
+	     
+	    });
+
+		return deferred.promise;
+	}
+
+	getHits(){
+		console.log("getting hits");
+		var deferred = Q.defer();
+		this.do_request("GET", ALERT_URL+'new').then(function(data){
 			console.log("stack of cards" + data);
 			deferred.resolve(data);
 		});
@@ -76,39 +120,23 @@ class DataService{
 
 	getWatchlist(){
 		var deferred = Q.defer();
-		this.do_request("GET", GET_WATCHLIST_URL).then(function(data){
+		this.do_request("GET", WATCHLIST_URL).then(function(data){
 			console.log("getting watchlist" + data);
 			// getting the watchlist needs to do a join on the hits table for scan names
 			// and append that onto to the object this function is resolved with
 			deferred.resolve(data);
 		});
 
-
 		console.log("Retrieving watchlist");
 		return deferred.promise;
 	}
 
-	getNumHitsPerTicker(){
-		var deferred = Q.defer();
-
-		var path = BASE_URL + '/api/watchlist/hits/numberOf';
-
-
-		this.do_request("GET", path).then(function(data){
-			console.log("Got the number");
-			deferred.resolve(data);
-		})
-
-		return deferred.promise;
-	}
 
 
 	getWatchlistHits(ticker){
-
 		var deferred = Q.defer();
-
-		var path = BASE_URL + "/api/watchlist/hits/"+ticker;
-		this.do_request("GET", path).then(function(data){
+		var URL = WATCHLIST_CONTRACT_URL + "hits/" + ticker;
+		this.do_request("GET", URL).then(function(data){
 			console.log("fetched the watchlist hit")
 			deferred.resolve(data);
 		})
@@ -118,21 +146,6 @@ class DataService{
 
 	}
 
-	/*addToWatchlist(underyling_symbol){
-		var deferred = Q.defer();
-		var path = ADD_TO_WATCHLIST_URL + "/" + underyling_symbol;
-		
-		this.do_request("PUT", path).then(function(data){
-			console.log(data);
-			console.log ("added  "+ underyling_symbol + "to watchlist");
-			deferred.resolve();
-		});
-
-
-		console.log("Adding to watchlist");
-		return deferred.promise;
-	}*/
-
 	addToWatchlist(contract){
 		var stringified_contract = querystring.stringify({
 			'contract' : contract.contract_symbol,
@@ -141,14 +154,9 @@ class DataService{
 			'ask' : contract.ask,
 
 		});
-
-		/*var deferred = Q.defer();
-		console.log(contract);
-		deferred.resolve();*/
 		
 		var deferred = Q.defer();
-		var path = BASE_URL + '/api/watchlist';
-		this.do_request("PUT", path, stringified_contract).then(function(data){
+		this.do_request("PUT", WATCHLIST_URL, stringified_contract).then(function(data){
 			console.log("Adding contract to watchlist" + data);
 			deferred.resolve();
 		});
@@ -166,9 +174,11 @@ class DataService{
 			'contract_symbol': card.contract_symbol,
 		});
 
-		var path = BASE_URL + "/api/watchlist/hit"
+		console.log("made stringified_hit");
 
-		this.do_request("PUT", path, stringified_hit).then(function(data){
+		console.log(WATCHLIST_CONTRACT_URL+'hits');
+
+		this.do_request("PUT", WATCHLIST_CONTRACT_URL+'hits', stringified_hit).then(function(data){
 			console.log("adding this sucker to watchlist hits");
 			deferred.resolve();
 		})
@@ -182,8 +192,7 @@ class DataService{
 		});
 
 		var deferred = Q.defer();
-		var path = BASE_URL + "/api/filter/alert_seen";
-		this.do_request("PUT", path, stringified_hit_id).then(function(data){
+		this.do_request("PUT", ALERT_URL, stringified_hit_id).then(function(data){
 			console.log("marked " + hit_id + " as seen");
 			deferred.resolve();
 		})
@@ -191,19 +200,10 @@ class DataService{
 		return deferred.promise;
 	}
 
-	deleteFromWatchlist(){
+	deleteContractFromWatchlist(contract){
 		var deferred = Q.defer()
-		var path = "/filters/"
-		do_request("DELETE", path);
-		console.log("Adding to watchlist");
-
-		return deferred.promise;
-	}
-
-	getFilters(){
-		var deferred = Q.defer();
-		
-		this.do_request("GET", GET_FILTER_LIST).then(function(data){
+		var DELETE_CONTRACT_URL = WATCHLIST_CONTRACT_URL + contract;
+		this.do_request("DELETE", DELETE_CONTRACT_URL ).then(function(data){
 			console.log("got the filter list");
 			console.log(data);
 			deferred.resolve(data);
@@ -212,14 +212,35 @@ class DataService{
 		return deferred.promise;
 	}
 
+	deleteTickerFromWatchlist(ticker){
+		var deferred = Q.defer()
 
+		var DELETE_TICKER_URL = WATCHLIST_TICKER_URL + ticker;
+		this.do_request("DELETE", DELETE_TICKER_URL ).then(function(data){
+			console.log("got the filter list");
+			console.log(data);
+			deferred.resolve(data);
+		})
+
+		return deferred.promise;
+	}
+
+	getScanList(){
+		var deferred = Q.defer();
+		
+		this.do_request("GET", SCAN_URL +'/list').then(function(data){
+			console.log("got the filter list");
+			console.log(data);
+			deferred.resolve(data);
+		})
+
+		return deferred.promise;
+	}
 
 	toggleScanActivation(filter_id){
 		var deferred = Q.defer();
 
-		var path = BASE_URL + "/api/filter/activate/" + filter_id;
-
-		this.do_request("PUT", path).then(function(data){
+		this.do_request("PUT", (SCAN_URL +'activate/' +filter_id) ).then(function(data){
 			console.log("Toggling scan activation" + data);
 		});
 

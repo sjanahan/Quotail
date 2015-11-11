@@ -21,6 +21,8 @@ var GlobalConstants = {
 		gray_dark: '#151B20',
 		yellow: '#f2d936',
 		border_gray: '#e6e6e6',
+		gray_dark: '#151B20',
+		gray: '#1B2228'
 	}
 };
 

@@ -18,6 +18,7 @@ var {
   Dimensions,
   Image,
   AlertIOS,
+  ActivityIndicatorIOS,
 } = React;
 
 var GlobalStyles = require('../constants/GlobalStyles');
@@ -32,16 +33,13 @@ var {
 var clamp = require('clamp');
 var Q = require('q');
 var _ = require('underscore');
+var moment = require('moment');
 
 var LoginStore = require('../stores/LoginStore');
 var LoginActions = require('../actions/LoginActions');
 var DataService = require('../services/DataService');
 
 var FormatUtils = require('../services/FormatUtils');
-
-const People = [
-  'white',
-]
 
 /*var STACK_OF_CARDS = [
   {
@@ -98,7 +96,9 @@ class MainScreen extends Component{
       enter: new Animated.Value(0.5),
       //person: People[0],
       STACK_OF_CARDS: [],
+      graph:null,
       card: null,
+      graph_loading:true,
     }
   }
 
@@ -127,6 +127,7 @@ class MainScreen extends Component{
 
   componentDidMount() {
     var context = this;
+    console.log("MAIN SCREEN MOUNTING");
     DataService.getHits().then(function(data){
       console.log("THE STACK IS BACK");
       console.log(data);
@@ -149,6 +150,9 @@ class MainScreen extends Component{
   }
 
   _animateEntrance() {
+    var context = this;
+
+
     Animated.spring(
       this.state.enter,
       { toValue: 1, friction: 8 }
@@ -223,6 +227,7 @@ class MainScreen extends Component{
 
   swipeRight(card){
     console.log("swipe right");
+    console.log(card);
     _.each(card.hit_ids, function(hit_id){
       DataService.setAsDelivered(hit_id);
     })
@@ -269,9 +274,7 @@ class MainScreen extends Component{
     }else if (this.state.card == no_more_cards){
       var NoMoreCards = require('./NoMoreCards');
       return <NoMoreCards/>
-
     }else{
-      
       if ((this.state.card.type === "C" && this.state.card.side === "B") ||
         (this.state.card.type === "P" && this.state.card.side == "S")) {
         this.state.card.isBullish = true;
@@ -282,28 +285,45 @@ class MainScreen extends Component{
         this.state.card.isNeutral = true;
       }
 
-      console.log(this.state.card);
-
-
-      return (
-        <View style={styles.container} menuActions={this.props.menuActions}>
-          <Animated.View style={[styles.card, animatedCardStyles]} {...this.panResponder.panHandlers}>
-            
-            <Image resizeMode={'contain'} style={styles.graph}>
-            <Text style={[styles.welcome, 
-                          this.state.card.isNeutral==true && GlobalStyles.light_gray,
-                          this.state.card.isBullish==true && GlobalStyles.green,
-                          this.state.card.isBearish==true && GlobalStyles.red]} textAlign={'center'}> {FormatUtils.convertAlertToText(this.state.card)} </Text>
-           
-            </Image>
-
-            <View style={styles.filter_container}>
+      console.log(this.state.graph);
+            /*<View style={styles.filter_container}>
              {this.state.card.scan_names.map(function(scan_name, i){
                 return <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]} key={i}> {scan_name}</Text>
                        
              })} 
-             </View>
+             </View>*/
+
+      var graph_url = 'http://localhost:3009/api/chain/graph/'+ this.state.card.contract_symbol + '?height='+ deviceScreen.height*.55 + '&width='+ deviceScreen.width+ '&token=' + LoginStore.get_jwt();
+      console.log ("GRAPH URL  " + graph_url);
+      /*var loader = this.state.graph_loading ?
+      <View style={styles.progress}>
+        <ActivityIndicatorIOS style={{marginLeft:deviceScreen.width /2, marginTop:deviceScreen.height/3}}/>
+      </View> : null;
+
+      console.log(loader);*/
+
+      return (
+        <View style={styles.container} menuActions={this.props.menuActions}>
+          <Animated.View style={[styles.card, animatedCardStyles]} {...this.panResponder.panHandlers}>
+            <Text style={[styles.welcome, 
+              this.state.card.isNeutral==true && GlobalStyles.light_gray,
+              this.state.card.isBullish==true && GlobalStyles.green,
+              this.state.card.isBearish==true && GlobalStyles.red]} textAlign={'center'}> {FormatUtils.convertAlertToText(this.state.card)} </Text>
             
+            
+            <Image 
+              resizeMode={'contain'} 
+              style={styles.graph} 
+              source={{uri:graph_url}}>
+            </Image>
+
+            {this.state.card.scan_names.map(function(scan_name, i){
+                return <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]} key={i}> {scan_name}</Text>
+                       
+             })}
+
+             <Text style = {GlobalStyles.light_gray} > {moment.unix(this.state.card.time/1000).format("MM-DD-YY HH:MM:SS")} </Text> 
+         
           </Animated.View>
           
           <View style={styles.yup_or_no}>
@@ -349,10 +369,9 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'center',
-    backgroundColor: 'white',
-    width:deviceScreen.width,
-    height:deviceScreen.height,
-    paddingTop:75
+    backgroundColor: GlobalConstants.colors.gray_dark,
+    flexDirection:'column',
+    paddingTop:50
   },
   welcome: {
     fontSize: 20,
@@ -366,31 +385,29 @@ var styles = StyleSheet.create({
     borderRadius:5,
     overflow:'hidden'
   },
-  filter_container:{
-    justifyContent:'center',
-    flexDirection:'row'
-  },
   card: {
-    width: deviceScreen.width * .95,
-    height: deviceScreen.height * (.65),
     borderColor:'#E6E6E6',
     justifyContent: 'center',
     alignItems:'center',
+    height:deviceScreen.height*.75,
   },
   graph: {
-    width: deviceScreen.width  * .94,
-    height: deviceScreen.height * (.60),
+    justifyContent: 'center',
+    alignItems:'center',
+    height:deviceScreen.height*.55,
+    width:deviceScreen.width*.95,
+
   },
   yup_or_no:{    
-    width: deviceScreen.width * .95,
-    height: deviceScreen.height * (.2),
-    backgroundColor: 'white',
+    backgroundColor: GlobalConstants.colors.gray_dark,
     borderColor:'#E6E6E6',
     flexDirection:'row',
+    height:deviceScreen.height*.15,
   },
   yes_button:{
+    flex:.2,
     width: deviceScreen.width*.315,
-    height: deviceScreen.height * .19,
+    
     borderRadius:3,
     borderColor:'#E6E6E6',
     alignItems: 'center',
@@ -398,18 +415,16 @@ var styles = StyleSheet.create({
     justifyContent: 'center',
   },
   no_button:{
+    flex:.2,
     width: deviceScreen.width*.315,
-    height: deviceScreen.height * .19,
-    //backgroundColor: '#e6e6e6',
-    //borderColor:'#E6E6E6',
     borderRadius:3,
     alignItems: 'center',
     justifyContent: 'center',
   },
   tail_button:{
+    flex:.2,
     width: deviceScreen.width*.315,
-    height: deviceScreen.height * .19,
-    backgroundColor: 'white',
+    backgroundColor: GlobalConstants.colors.gray_dark,
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -441,11 +456,6 @@ var styles = StyleSheet.create({
     color: 'red',
   }
 });
-
-/*
-          <Image resizeMode={'contain'} style={styles.graph} 
-          //source={{uri:'http://chartmill.com/chartsrv/chart.php?width=400&height=350&sheight=120&id='+this.state.card.id+'&timeframe=DAILY&elements=0&type=CANDLES&cl=F'}}
-          >*/
 
 
 // wrapper that checks LoginStore for valid jwt before rendering

@@ -43,15 +43,13 @@ class FormatUtils{
     }
 
 	convertAlertToText(alert){
-		console.log(alert);
+		//console.log(alert);
 	    var str = "";
 	   
         var contract = this.parseOptionContract(alert.contract_symbol);
-        console.log(contract);
+        //console.log(contract);
 
-      
-        
-        str += contract.root_symbol.toUpperCase() + " " + contract.expiryYear + "-" + 
+     	str += contract.root_symbol.toUpperCase() + " " + contract.expiryYear + "-" + 
             (contract.expiryMonth < 10 ? "0" + contract.expiryMonth : contract.expiryMonth) + "-" +
             (contract.expiryDay < 10 ? "0" + contract.expiryDay : contract.expiryDay) + " ";
         str += contract.type;

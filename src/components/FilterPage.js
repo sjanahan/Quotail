@@ -35,7 +35,7 @@ var FilterPage = React.createClass({
   componentDidMount(){
     var context = this;
     // network call for filter names and definitions
-    DataService.getFilters().then(function(data){
+    DataService.getScanList().then(function(data){
       console.log('the filter page got the list');
       //context.state.filterlist = data;
       context.updateDataSource(data);

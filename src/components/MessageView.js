@@ -13,9 +13,18 @@ var {
 
 var global_styles = require('../constants/Styles');
 var moment = require('moment');
+var GlobalConstants = require('../constants/GlobalConstants');
+
+var {
+	deviceScreen
+} = GlobalConstants;
 
 
 var MessageView = React.createClass({
+	setNativeProps(nativeProps) {
+    	this._root.setNativeProps(nativeProps);
+  	},
+
 	getInitialState(){
 		return{
 			messageThread : [],
@@ -35,16 +44,28 @@ var MessageView = React.createClass({
 			context.setState({
 				messageThread:data
 			});
-		});
 
+			console.log(context._scrollView);
+		});
 	},
 
 	getHumanReadableDate(timestamp){
-		console.log(timestamp);
 		human_readable_date = moment.unix(timestamp/1000).format("MM-DD-YY HH:MM:SS");
-		console.log(human_readable_date);
 		return human_readable_date;
 	},
+
+	sortMessages(messages){
+		messages.sort(function(a,b){
+			if (a.time < b.time) return 1;
+			if (a.time > b.time) return -1;
+			return 0;
+		});
+
+		return messages;
+	}
+	,
+
+
 
 	render(){
 		//console.log(this.props);
@@ -52,26 +73,23 @@ var MessageView = React.createClass({
 		var getHumanReadableDate = this.getHumanReadableDate;
 		var context = this;
 		return(
-			<ScrollView style={ styles.container }>
-				{this.state.messageThread.map(function(msg, i){
-					return (
-					 <TouchableHighlight onPress={ ()=> { AlertIOS.alert(
-		                  'Tail trade?',
-		                  null,
-		            [
-		              {text: 'Dismiss', onPress: () => console.log('Foo Pressed!')},
-		              {text: 'Yes', onPress: () => console.log('Bar Pressed!')},
-		            ] 
-		          	)}} >
-
+			<View style={ styles.container } >
+			<ScrollView 
+				ref={component => this._scrollView = component}{...this.props}
+				>
+				{this.sortMessages(this.state.messageThread).map(function(msg, i){
+					return(
 					<View style={ styles.bubble } key={ i }>
 						<Text style={ [styles.messages, global_styles.gray_darkest ] } key={ i }> 
-						{FormatUtils.convertAlertToText(msg) } {"\n"}{context.getHumanReadableDate(msg.time) }  </Text>
-					</View>
-
-					</TouchableHighlight>);
+							{FormatUtils.convertAlertToText(msg) }  
+						</Text>
+						<Text style={ styles.timestamp }>
+							{context.getHumanReadableDate(msg.time) }
+						</Text>
+					</View>);
 				})}
 			</ScrollView>
+			</View>
 		);
 	}
 })
@@ -91,7 +109,13 @@ var styles = StyleSheet.create({
 	    marginLeft:10,
 	    marginRight:10,
 	    backgroundColor:'#AAE0F7'
-
+	},
+	timestamp:{
+		fontFamily: 'Arial',
+	    fontSize: 12,
+	    color: GlobalConstants.colors.gray_dark,
+	    marginBottom: 5,
+	    textAlign: 'right',
 	},
 	messages:{
 		fontFamily: 'HelveticaNeue',

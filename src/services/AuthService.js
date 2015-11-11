@@ -8,7 +8,6 @@ var LoginConstants = require('../constants/LoginConstants');
 
 var {
   LOGIN_URL,
-  SIGNUP_URL,
   FORGOT_PASSWORD_URL,
   REGISTER_URL,
 } = LoginConstants;
@@ -43,6 +42,8 @@ var AuthService = function(){
       },
       body:body,
     }
+
+    console.log('logging in function');
 
     return self.handleAuth(fetch(LOGIN_URL, Obj));
   }
@@ -125,7 +126,7 @@ var AuthService = function(){
 
   self.handleAuth = function(loginPromise) {
     return loginPromise.then(function(response) {
-      //console.log(response);
+      console.log(response);
         response.json().then(function(jsoned){
         if (jsoned.token){
           console.log(jsoned.token);
