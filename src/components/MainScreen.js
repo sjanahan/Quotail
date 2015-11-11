@@ -188,10 +188,9 @@ class MainScreen extends Component{
 
         if (Math.abs(this.state.pan.x._value) > SWIPE_THRESHOLD) {
           if (velocity > 0){
-            this.swipeRight(this.state.card.ticker);
+            this.swipeRight(this.state.card);
           }else{
-            this.swipeLeft(this.state.card.ticker);
-            
+            this.swipeLeft(this.state.card);
           }
           Animated.decay(this.state.pan.x, {
             velocity: velocity,
@@ -331,16 +330,7 @@ class MainScreen extends Component{
               <View style={styles.no_button}><Image source={require('image!no')}/></View>
             </TouchableHighlight>
 
-            <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> { AlertIOS.alert(
-                    'Tail trade?',
-                    `${this.state.card.name}`,
-              [
-                {text: 'Dismiss'},
-                {text: 'Yes', onPress: () => { this._resetState(); } } ,
-              ] 
-            )}} >
-              <View style={ styles.tail_button }><Image source={ require('image!tail') }/></View>
-            </TouchableHighlight>
+
             
             <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> {this.swipeRight(this.state.card); this._resetState();}}>
               <View style={styles.yes_button}><Image source={require('image!yes')}/></View>
@@ -364,6 +354,18 @@ class MainScreen extends Component{
 }
 
 
+/*            <TouchableHighlight underlayColor='#e6e6e6' onPress={ ()=> { AlertIOS.alert(
+                    'Tail trade?',
+                    `${this.state.card.name}`,
+              [
+                {text: 'Dismiss'},
+                {text: 'Yes', onPress: () => { this._resetState(); } } ,
+              ] 
+            )}} >
+              <View style={ styles.tail_button }><Image source={ require('image!tail') }/></View>
+            </TouchableHighlight>*/
+
+
 var styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -371,7 +373,7 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: GlobalConstants.colors.gray_dark,
     flexDirection:'column',
-    paddingTop:50
+    paddingTop:64,
   },
   welcome: {
     fontSize: 20,
@@ -389,14 +391,12 @@ var styles = StyleSheet.create({
     borderColor:'#E6E6E6',
     justifyContent: 'center',
     alignItems:'center',
-    height:deviceScreen.height*.75,
   },
   graph: {
     justifyContent: 'center',
     alignItems:'center',
     height:deviceScreen.height*.55,
     width:deviceScreen.width*.95,
-
   },
   yup_or_no:{    
     backgroundColor: GlobalConstants.colors.gray_dark,
@@ -406,7 +406,7 @@ var styles = StyleSheet.create({
   },
   yes_button:{
     flex:.2,
-    width: deviceScreen.width*.315,
+    width: deviceScreen.width*.5,
     
     borderRadius:3,
     borderColor:'#E6E6E6',
@@ -416,7 +416,7 @@ var styles = StyleSheet.create({
   },
   no_button:{
     flex:.2,
-    width: deviceScreen.width*.315,
+    width: deviceScreen.width*.5,
     borderRadius:3,
     alignItems: 'center',
     justifyContent: 'center',

@@ -15,7 +15,7 @@ var NoMoreCards = React.createClass({
 			<View style={ styles.loading }>
 				<Text> No more cards. </Text>
 				<Text> Try activating another filter by going to </Text>
-				<Text> Side menu > Filters > Hit a bolt </Text>
+				<Text> Side menu > Scans > Hit a bolt </Text>
 			</View>
 		);
 	}

@@ -20,7 +20,7 @@ var SignUp = React.createClass({
     return {
       firstname:'mobile',
       lastname:'test-lastname',
-      email: 'janahansivaraman+mobile62@gmail.com',
+      email: 'janahansivaraman+mobile67@gmail.com',
       password: 'i9u8y7t6',
       confirm_password: 'i9u8y7t6'
     }
@@ -38,9 +38,6 @@ var SignUp = React.createClass({
     return (
       <View style={styles.container}>
           <Image style={styles.bg} />
-          <View style={styles.header}>
-              <Image style={styles.mark} />
-          </View>
           <View style={styles.inputs}>
               <View style={styles.inputContainer}>
                   <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
@@ -108,7 +105,8 @@ var styles = StyleSheet.create({
     container: {
       flexDirection: 'column',
       flex: 1,
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
+      paddingTop:64,
     },
     bg: {
         position: 'absolute',

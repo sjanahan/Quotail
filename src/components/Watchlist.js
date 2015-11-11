@@ -53,6 +53,7 @@ var Watchlist = React.createClass({
 
 
 	openChat(item){
+		item.new_hits = undefined;
 		console.log("ONPRESSED")
 		this.props.navigator.push({
       		title: `${item.ticker} Hits`,

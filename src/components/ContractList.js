@@ -93,6 +93,7 @@ var ContractList = React.createClass({
 				automaticallyAdjustContentInsets={false}
 				dataSource={this.state.dataSource} 
 				renderRow={this.renderRow}
+				initialListSize={this.props.contracts.length} 
 				ref={component => this._root = component}{...this.props} 
 				/>
 			</Animated.View>

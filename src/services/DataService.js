@@ -186,6 +186,17 @@ class DataService{
 		return deferred.promise;
 	}
 
+	clearWatchlistContractHits(ticker){
+		console.log("clearing hits");
+		var deferred = Q.defer();
+		this.do_request("GET", WATCHLIST_CONTRACT_URL + 'hits/clear_all/' + ticker).then(function(data){
+			console.log("Cleared hits for " + ticker);
+			deferred.resolve();
+		});
+
+		return deferred.promise;
+	}
+
 	setAsDelivered(hit_id){
 		var stringified_hit_id = querystring.stringify({
 			'hit_id': hit_id

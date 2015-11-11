@@ -45,7 +45,9 @@ var MessageView = React.createClass({
 				messageThread:data
 			});
 
-			console.log(context._scrollView);
+			DataService.clearWatchlistContractHits(ticker).then(function(data){
+				console.log("componentDidMount messageview cleared hits");
+			})
 		});
 	},
 
