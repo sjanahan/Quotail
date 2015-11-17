@@ -15,12 +15,27 @@ var {
   deviceScreen
 } = GlobalConstants;
 
+var RNFXActions = require('react-native-router-flux').Actions;
 var AuthService = require('../services/AuthService');
+var KeyboardEvents = require('react-native-keyboardevents');
+var KeyboardEventEmitter = KeyboardEvents.Emitter;
 
 var ForgotPassword = React.createClass({
+    
+
   getInitialState: function() {
+    KeyboardEventEmitter.on(KeyboardEvents.KeyboardDidShowEvent, (frames) => {
+      console.log("DID SHOW");
+      this.setState({keyboardSpace: frames.end.height});
+    });
+    KeyboardEventEmitter.on(KeyboardEvents.KeyboardWillHideEvent, (frames) => {
+      console.log("DID HIDE");
+      this.setState({keyboardSpace: 0});
+    });
+
     return {
-      email: '',
+      email: 'janahansivaraman+mobile67@gmail.com',
+      keyboardSpace:0
     }
   },
 
@@ -28,13 +43,21 @@ var ForgotPassword = React.createClass({
   	AuthService.resetPassword(this.state.email);
   },
 
+  componentWillUnmount: function() {
+    KeyboardEventEmitter.off(KeyboardEvents.KeyboardDidShowEvent, this.updateKeyboardSpace);
+    KeyboardEventEmitter.off(KeyboardEvents.KeyboardWillHideEvent, this.resetKeyboardSpace);
+  },
+
   render: function() {
-    return (
-        <View style={styles.container}>
-            <Image style={styles.bg} />
-            <View style={styles.header}>
-                <Image style={styles.mark} source={{uri: 'http://i.imgur.com/da4G0Io.png'}} />
-            </View>
+    var content = (
+       <View style={styles.container}>
+      <View style={ styles.header }>
+              <TouchableHighlight onPress={ ()=>{RNFXActions.login();} }>
+            <Text style={ styles.back } > Back to Login </Text>
+          </TouchableHighlight>
+      </View>
+     
+
             <View style={styles.inputs}>
                 <View style={styles.inputContainer}>
                     <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
@@ -53,26 +76,34 @@ var ForgotPassword = React.createClass({
                 <Text style={styles.whiteFont}>Reset Password</Text>
             </View>
             </TouchableHighlight>
-
-
-       
+           </View>
+      );
+    return (
+        <View style = {styles.sview}>
+          {content}
+          <View style={{height: this.state.keyboardSpace}}></View>
         </View>
     );
   }
 });
 var styles = StyleSheet.create({
+    sview:{
+        flex:1,
+      backgroundColor: GlobalConstants.colors.gray_dark,
+    },
     container: {
       flexDirection: 'column',
       flex: 1,
-      backgroundColor: 'transparent'
+      backgroundColor: 'transparent',
+      paddingTop:64,
+    },
+    back:{
+      color:GlobalConstants.colors.text_white,
     },
     bg: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: deviceScreen.width,
-        height: deviceScreen.height,
-        backgroundColor:'#151B20'
+      width: GlobalConstants.deviceScreen.width,
+      backgroundColor:GlobalConstants.colors.gray_dark,
+      flex:1,
     },
     header: {
         justifyContent: 'center',

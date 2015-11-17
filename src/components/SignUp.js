@@ -7,6 +7,7 @@ var {
   TextInput,
   Image,
   TouchableHighlight,
+  ScrollView,
 } = React;
 
 var GlobalConstants = require('../constants/GlobalConstants');
@@ -14,15 +15,35 @@ var {
   deviceScreen
 } = GlobalConstants;
 var AuthService = require('../services/AuthService');
+var RNFXActions = require('react-native-router-flux').Actions;
+var KeyboardEvents = require('react-native-keyboardevents');
+var KeyboardEventEmitter = KeyboardEvents.Emitter;
 
 var SignUp = React.createClass({
   getInitialState: function() {
+    KeyboardEventEmitter.on(KeyboardEvents.KeyboardDidShowEvent, (frames) => {
+      console.log("DID SHOW");
+      console.log(frames);
+      
+      this.setState({keyboardSpace: frames.end.height});
+      
+      /*let scrollResponder = this.refs.scrollView.getScrollResponder();
+      scrollResponder.scrollTo(frames.begin.height);*/
+     
+    });
+    
+    KeyboardEventEmitter.on(KeyboardEvents.KeyboardWillHideEvent, (frames) => {
+      console.log("DID HIDE");
+      this.setState({keyboardSpace: 0});
+    });
+
     return {
       firstname:'mobile',
       lastname:'test-lastname',
-      email: 'janahansivaraman+mobile67@gmail.com',
+      email: 'janahansivaraman+mobile86@gmail.com',
       password: 'i9u8y7t6',
-      confirm_password: 'i9u8y7t6'
+      confirm_password: 'i9u8y7t6',
+      keyboardSpace:0
     }
   },
 
@@ -34,11 +55,20 @@ var SignUp = React.createClass({
                           this.state.confirm_password);
   },
 
+  componentWillUnmount: function() {
+    KeyboardEventEmitter.off(KeyboardEvents.KeyboardDidShowEvent, this.updateKeyboardSpace);
+    KeyboardEventEmitter.off(KeyboardEvents.KeyboardWillHideEvent, this.resetKeyboardSpace);
+  },
+
   render: function() {
-    return (
-      <View style={styles.container}>
-          <Image style={styles.bg} />
-          <View style={styles.inputs}>
+    var content = (
+        <View style={styles.container}>
+          <View style = {styles.header} >
+          <TouchableHighlight onPress={ ()=>{RNFXActions.login();} }>
+            <Text style={styles.back}> Back to Login </Text>
+          </TouchableHighlight>
+          </View>
+          <View style={styles.bg}/>
               <View style={styles.inputContainer}>
                   <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
                   <TextInput 
@@ -85,42 +115,57 @@ var SignUp = React.createClass({
                       onChangeText={(text) => this.setState({confirm_password:text})}
                   />
               </View>
-             
-          </View>
-              
-          
+     
           <TouchableHighlight underlayColor='transparent' onPress={this.register}>
           <View style={styles.signin}>
               <Text style={styles.whiteFont}>Register</Text>
           </View>
           </TouchableHighlight>
-
-
-     
+       </View>
+      )
+    return (
+      <View style={ styles.sview }>
+        {content}
+        <View style={{height: this.state.keyboardSpace}}></View>
       </View>
+
+      
+      
+      
+ 
     );
   }
 });
+
+
 var styles = StyleSheet.create({
+    sview:{
+      flex:1,
+      backgroundColor: GlobalConstants.colors.gray_dark,
+    },
     container: {
       flexDirection: 'column',
+      justifyContent:'flex-start',
       flex: 1,
-      backgroundColor: 'transparent',
-      paddingTop:64,
-    },
-    bg: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: deviceScreen.width,
-        height: deviceScreen.height,
-        backgroundColor:'#151B20'
+      backgroundColor:'#151B20',
+      paddingTop:20,
+      height: deviceScreen.height,
+
     },
     header: {
         justifyContent: 'center',
         alignItems: 'center',
-        flex: .35,
-        backgroundColor: 'transparent'
+        flex: .5,
+        backgroundColor: 'transparent',
+    },
+
+    back:{
+      color:GlobalConstants.colors.text_white,
+    },
+    bg: {
+      width: GlobalConstants.deviceScreen.width,
+      backgroundColor:GlobalConstants.colors.gray_dark,
+      flex:1,
     },
     mark: {
         width: 150,

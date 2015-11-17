@@ -23,11 +23,12 @@ const styles = StyleSheet.create({
     flex: 1,
     width: deviceScreen.width,
     height: deviceScreen.height,
-    backgroundColor: '#E6E6E6',
-    paddingTop:deviceScreen.height*.067,
+    backgroundColor: GlobalConstants.colors.gray_dark,
+    paddingTop:66
+  
   },
   menu_item:{
-    borderColor:'black',
+    borderColor:'#F2F2F2',
     borderBottomWidth:1,
   },
   item: {
@@ -36,10 +37,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     fontSize: 20,
     fontWeight: '300',
-    paddingTop: 5,
-    backgroundColor :'white',
+    backgroundColor: GlobalConstants.colors.gray_dark,
+    paddingTop:5,
     paddingBottom: 5,
     paddingLeft:10,
+    color:GlobalConstants.colors.text_white,
   },
 });
 
@@ -105,14 +107,37 @@ var LogoutButton = React.createClass({
   }
 });
 
+var CreditsButton=React.createClass({
+  goToCredits(){
+    const credits = require('./Credits');
+    
+    this.props.getNavigator().push({
+      component: credits,
+      title: 'Credits',
+    });
+  },
+  render(){
+    return(
+      <TouchableHighlight
+        onPress={this.goToCredits}>
+        <View style={styles.menu_item}>
+          <Text style={styles.item}>Credits</Text>
+        </View>
+      </TouchableHighlight>
+    );  
+
+  }
+})
+
 
 
 var Menu = React.createClass({
   render() {
     return (
-        <ScrollView style={styles.menu}>
-          <AccountSettingsButton {...this.props}/>
+        <ScrollView style={styles.menu}
+        automaticallyAdjustContentInsets={false}>
           <FilterButton {...this.props}/>
+          <CreditsButton {...this.props}/>
           <LogoutButton/>
         </ScrollView>
     );

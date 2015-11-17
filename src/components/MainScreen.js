@@ -99,14 +99,12 @@ class MainScreen extends Component{
       graph:null,
       card: null,
       graph_loading:true,
+      stack_loading:true,
     }
   }
 
   goToNextPerson() {
-    //let currentPersonIdx = People.indexOf(this.state.person);
-    //console.log(currentPersonIdx);
 
-    //let newIdx = currentPersonIdx + 1;
     
 
     let currentCardIndex = this.state.STACK_OF_CARDS.indexOf(this.state.card);
@@ -130,20 +128,21 @@ class MainScreen extends Component{
     console.log("MAIN SCREEN MOUNTING");
     DataService.getHits().then(function(data){
       console.log("THE STACK IS BACK");
-      console.log(data);
+      //console.log(data);
 
       var first_card = data.length == 0 ? no_more_cards: data[0];
 
       context.setState({
         STACK_OF_CARDS : data,
         card:first_card,
+        stack_loading:false,
       });
 
 
       context._animateEntrance();
     });
     
-    this._animateEntrance();
+    //this._animateEntrance();
 
 
    
@@ -250,6 +249,7 @@ class MainScreen extends Component{
 
 
   render() {
+    var context = this;
     let { pan, enter, id } = this.state;
 
     let [translateX, translateY] = [pan.x, pan.y];
@@ -274,6 +274,8 @@ class MainScreen extends Component{
       var NoMoreCards = require('./NoMoreCards');
       return <NoMoreCards/>
     }else{
+      
+
       if ((this.state.card.type === "C" && this.state.card.side === "B") ||
         (this.state.card.type === "P" && this.state.card.side == "S")) {
         this.state.card.isBullish = true;
@@ -292,12 +294,14 @@ class MainScreen extends Component{
              })} 
              </View>*/
 
-      var graph_url = 'http://localhost:3009/api/chain/graph/'+ this.state.card.contract_symbol + '?height='+ deviceScreen.height*.55 + '&width='+ deviceScreen.width+ '&token=' + LoginStore.get_jwt();
+      var graph_url = 'http://mobile.quotail.co/api/chain/graph/'+ this.state.card.contract_symbol + '?height='+ deviceScreen.height*.55 + '&width='+ deviceScreen.width+ '&token=' + LoginStore.get_jwt();
       console.log ("GRAPH URL  " + graph_url);
       /*var loader = this.state.graph_loading ?
       <View style={styles.progress}>
         <ActivityIndicatorIOS style={{marginLeft:deviceScreen.width /2, marginTop:deviceScreen.height/3}}/>
       </View> : null;
+
+
 
       console.log(loader);*/
 
@@ -307,21 +311,16 @@ class MainScreen extends Component{
             <Text style={[styles.welcome, 
               this.state.card.isNeutral==true && GlobalStyles.light_gray,
               this.state.card.isBullish==true && GlobalStyles.green,
-              this.state.card.isBearish==true && GlobalStyles.red]} textAlign={'center'}> {FormatUtils.convertAlertToText(this.state.card)} </Text>
+              this.state.card.isBearish==true && GlobalStyles.red]} textAlign={'center'}> {FormatUtils.convertAlertToTitle(this.state.card)} </Text>
             
-            
-            <Image 
+              <Image 
               resizeMode={'contain'} 
               style={styles.graph} 
               source={{uri:graph_url}}>
             </Image>
 
-            {this.state.card.scan_names.map(function(scan_name, i){
-                return <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]} key={i}> {scan_name}</Text>
-                       
-             })}
-
-             <Text style = {GlobalStyles.light_gray} > {moment.unix(this.state.card.time/1000).format("MM-DD-YY HH:MM:SS")} </Text> 
+            <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]}> {this.state.card.scan_names[0]}</Text>
+            <Text style = {GlobalStyles.light_gray} > {moment.unix(this.state.card.time/1000).format("MM-DD-YY H:mm:ss")} </Text> 
          
           </Animated.View>
           
@@ -373,12 +372,13 @@ var styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: GlobalConstants.colors.gray_dark,
     flexDirection:'column',
-    paddingTop:64,
+    paddingTop:70,
   },
   welcome: {
     fontSize: 20,
     textAlign: 'center',
-
+    paddingRight:5,
+    fontFamily: 'Arial',
   },
   filter:{
     textAlign: 'center',
@@ -388,9 +388,9 @@ var styles = StyleSheet.create({
     overflow:'hidden'
   },
   card: {
-    borderColor:'#E6E6E6',
     justifyContent: 'center',
     alignItems:'center',
+    flex:.6
   },
   graph: {
     justifyContent: 'center',
@@ -402,7 +402,8 @@ var styles = StyleSheet.create({
     backgroundColor: GlobalConstants.colors.gray_dark,
     borderColor:'#E6E6E6',
     flexDirection:'row',
-    height:deviceScreen.height*.15,
+    height:deviceScreen.height*.12,
+    alignItems:'stretch'
   },
   yes_button:{
     flex:.2,

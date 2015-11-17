@@ -11,14 +11,12 @@ var GlobalConstants = require('../constants/GlobalConstants');
 
 
 
-var NoMoreCards = React.createClass({
+var NoHits = React.createClass({
 	
 	render(){
 		return(
 			<View style={ styles.loading }>
-				<Text style= { styles.word } > No more cards. </Text>
-				<Text style= { styles.word }> Try activating another filter by going to </Text>
-				<Text style= { styles.word }> Side menu > Scans > Hit a bolt </Text>
+				<Text style= { styles.word } > No repeat hits on contracts you're watching </Text>
 			</View>
 		);
 	}
@@ -38,4 +36,4 @@ var styles = StyleSheet.create({
 
 });
 
-module.exports = NoMoreCards;
+module.exports = NoHits;

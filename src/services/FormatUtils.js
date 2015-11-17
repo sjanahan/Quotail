@@ -1,3 +1,5 @@
+var sprintf = require('sprintf');
+
 class FormatUtils{
     parseOptionContract(contractSymbol) {
     	console.log(contractSymbol);
@@ -34,12 +36,66 @@ class FormatUtils{
     	var thousand = 1000;
     	var million = 1000000;
     	if (amount < thousand){
-    		return amount;
+    		return amount.toFixed(2);
     	}else if (amount >= thousand && amount < million){
     		return parseInt(amount/thousand) + "K";
     	}else if (amount >= million){
     		return (amount/million).toFixed(1) + "M";
     	}
+    }
+
+    normalizeSymbol(symbol){
+        var contract = this.parseOptionContract(symbol);
+        //console.log(contract);
+
+        var str = "";
+
+     	str += contract.expiryYear + "-" + 
+            (contract.expiryMonth < 10 ? "0" + contract.expiryMonth : contract.expiryMonth) + "-" +
+            (contract.expiryDay < 10 ? "0" + contract.expiryDay : contract.expiryDay) + " ";
+        str += contract.type + " " ;
+        str += contract.strike;
+
+        return str;	    
+	};
+
+	convertAlertToTitle(alert){
+		//console.log(alert);
+	    var str = "";
+	   
+        
+        //console.log(contract);
+        str += alert.is_sweep ? " Sweep " : " "
+        //str += "traded "
+        str += (alert.quantity) + "X";
+        var bid = parseFloat(alert.bid);
+        var ask = parseFloat(alert.ask);
+        var price = parseFloat(alert.price);
+        if(price < bid){
+            str += " BELOW BID ";
+        }
+        else if(price > ask){
+            str += " ABOVE ASK ";
+        }
+        else if(Math.abs(price - bid) < .0001 ){
+            str += " AT BID ";
+        }
+        else if(Math.abs(price - ask) < .0001 ){
+            str += " AT ASK ";
+        }
+        else if(Math.abs((bid+ask)/2) - price < .0001 ){
+            str += " AT MID ";
+        }
+        else if(Math.abs(price - bid) < Math.abs(price - ask) ){
+            str += " NEAR BID ";
+        }
+        else{
+            str += " NEAR ASK ";
+        }
+        str += "for $" + (this.convertCash(alert.price*alert.quantity*100));
+        str += alert.to_open? " to open" : "";
+
+		return str;
     }
 
 	convertAlertToText(alert){

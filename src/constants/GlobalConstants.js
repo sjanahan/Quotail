@@ -14,15 +14,16 @@ var GlobalConstants = {
 
 	colors:{
 		qtColor: '#00a4b5',
-		red: '#d31030',
-		green: '#09bb30',
+		red: '#FF0000',
+		green: '#8BC34A',
 		text_white: '#FFFFFF',
 		text_gray: '#D5D5D5',
 		gray_dark: '#151B20',
 		yellow: '#f2d936',
 		border_gray: '#e6e6e6',
 		gray_dark: '#151B20',
-		gray: '#1B2228'
+		gray: '#1B2228',
+		gray_mid:'#242B30'
 	}
 };
 

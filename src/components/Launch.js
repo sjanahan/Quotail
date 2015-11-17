@@ -32,9 +32,9 @@ var Launch = React.createClass({
 
   componentWillMount(){
     var context = this;
-    LocalStorage.remove("jwt").then(function(){
+    /*LocalStorage.remove("jwt").then(function(){
       console.log('removing')
-    });
+    });*/
     AuthService.isLoggedIn().then(function(bool){
       //console.log('callback');
       //console.log("Component did Mount");
@@ -48,12 +48,13 @@ var Launch = React.createClass({
   render(){
     var fs;// = <NavBar/>;
     //console.log(this.state.isLoggedIn);
-    if (this.state.isLoggedIn === true){
+    if (this.state.isLoggedIn == null){
+      fs = <Loading/>;
+    }
+    else if (this.state.isLoggedIn === true){
       fs = <NavBar/>;
     }else if (this.state.isLoggedIn === false){
       fs = <Login/>;
-    }else{
-      fs = <Loading/>;
     }
 
     return (

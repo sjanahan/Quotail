@@ -27,7 +27,7 @@ var MessageView = React.createClass({
 
 	getInitialState(){
 		return{
-			messageThread : [],
+			messageThread : null,
 		}
 	},
 
@@ -38,7 +38,6 @@ var MessageView = React.createClass({
 	componentDidMount(){
 		var ticker = this.props.item.ticker;
 		var context = this;
-		console.log();
 		DataService.getWatchlistHits(ticker).then(function(data){
 			console.log(data);
 			context.setState({
@@ -52,15 +51,13 @@ var MessageView = React.createClass({
 	},
 
 	getHumanReadableDate(timestamp){
-		human_readable_date = moment.unix(timestamp/1000).format("MM-DD-YY HH:MM:SS");
+		human_readable_date = moment.unix(timestamp/1000).format("MM-DD-YY HH:mm:ss");
 		return human_readable_date;
 	},
 
 	sortMessages(messages){
 		messages.sort(function(a,b){
-			if (a.time < b.time) return 1;
-			if (a.time > b.time) return -1;
-			return 0;
+			return -(a.time - b.time);
 		});
 
 		return messages;
@@ -74,7 +71,12 @@ var MessageView = React.createClass({
 		var trade = this.getCurrentItem().symbol;
 		var getHumanReadableDate = this.getHumanReadableDate;
 		var context = this;
-		return(
+		if( this.state.messageThread== null){
+			var Loading= require('./Loading');
+			return <Loading/>
+		}
+		else if (this.state.messageThread.length > 0){
+			return (
 			<View style={ styles.container } >
 			<ScrollView 
 				ref={component => this._scrollView = component}{...this.props}
@@ -93,6 +95,12 @@ var MessageView = React.createClass({
 			</ScrollView>
 			</View>
 		);
+
+		}else{
+			var NoHits = require('./NoHits');
+			return <NoHits/>;
+		}
+
 	}
 })
 
@@ -101,6 +109,7 @@ var styles = StyleSheet.create({
 	container:{
 		flex: 1,
 		paddingTop:10,
+		backgroundColor:GlobalConstants.colors.gray_dark,
 	},
 	bubble:{
 	    borderRadius: 5,

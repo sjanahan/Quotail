@@ -31,7 +31,7 @@
    * on the same Wi-Fi network.
    */
 
-  jsCodeLocation = [NSURL URLWithString:@"http://localhost:8081/QuotailApp.bundle"];
+  jsCodeLocation = [NSURL URLWithString:@"http://192.168.1.124:8081/QuotailApp.bundle"];
 
   /**
    * OPTION 2

@@ -43,6 +43,8 @@ var NavBar = React.createClass({
       return undefined;
     }
   },
+
+  /*shouldUpdate={true}*/
 	
 	render(){
     console.log(this.props);
@@ -50,11 +52,11 @@ var NavBar = React.createClass({
 	      <SideMenu ref="sidemenu" touchToClose={true} disableGestures={true} menu={<Menu getNavigator={this.getNavigator}/>}>
 	        	<NavigatorIOS
 	            ref = "nav"
-	        	  shouldUpdate={true}
 	        	  style={styles.container}
-	            barTintColor={GlobalConstants.colors.gray}
-	            tintColor={GlobalConstants.colors.text_gray}
-	            titleTextColor={GlobalConstants.colors.text_gray}
+	            barTintColor={'#151B20'}
+	            tintColor={'white'}
+	            titleTextColor={'white'}
+              shouldUpdate={true}
 	        	  initialRoute={{
 	    			  component: MainScreen,
 	    			  title:'Quotail',

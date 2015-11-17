@@ -1,4 +1,4 @@
-var BASE_URL = 'http://localhost:3009';
+var BASE_URL = 'http://mobile.quotail.co';
 var AUTH_URL = BASE_URL + '/api'
 
 var LoginConstants = {

@@ -25,10 +25,9 @@ var QuotailApp = React.createClass({
       <Router>
         <Route name="launch" component={ Launch } initial={true}/>
         <Route name="navBar" component={ NavBar }/>
-        <Route name="login" component={ Login }/>
-        <Route name="forgot" component={ ForgotPassword }/>
-        <Route name="signup" component={ SignUp }/>
-        <Route name="setPassword" component={ SetPassword }/>
+        <Route name="login" component={ Login } type="replace"/>
+        <Route name="forgot" component={ ForgotPassword } type="replace"/>
+        <Route name="signup" component={ SignUp } type="replace"/>
       </Router>
     );
   }

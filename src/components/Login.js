@@ -7,18 +7,34 @@ var {
   TextInput,
   Image,
   TouchableHighlight,
+  ScrollView,
 } = React;
 
 
 var AuthService = require('../services/AuthService');
 var LoginActions = require ('../actions/LoginActions');
 var GlobalConstants = require('../constants/GlobalConstants');
+var KeyboardEvents = require('react-native-keyboardevents');
+var KeyboardEventEmitter = KeyboardEvents.Emitter;
 
 var Login = React.createClass({
   getInitialState: function() {
+
+    console.log(KeyboardEvents);
+    console.log(KeyboardEventEmitter);
+    KeyboardEventEmitter.on(KeyboardEvents.KeyboardDidShowEvent, (frames) => {
+      console.log("DID SHOW");
+      this.setState({keyboardSpace: frames.end.height});
+    });
+    KeyboardEventEmitter.on(KeyboardEvents.KeyboardWillHideEvent, (frames) => {
+      console.log("DID HIDE");
+      this.setState({keyboardSpace: 0});
+    });
+
     return {
-      username: 'amajedi@gmail.com',
-      password: '!muffinY0'
+      username: 'janahansivaraman@gmail.com',
+      password: 'i9u8y7t6',
+      keyboardSpace: 0,
     }
   },
 
@@ -34,21 +50,46 @@ var Login = React.createClass({
     LoginActions.signUp();
   },
 
-  render: function() {
-    return (
-        <View style={styles.container}>
-            <Image style={styles.bg}/>
-            <View style={styles.header}>
-                <Image style={styles.mark} source={require('image!Quotail')} />
-            </View>
-            <View style={styles.inputs}>
+  componentWillUnmount: function() {
+    KeyboardEventEmitter.off(KeyboardEvents.KeyboardDidShowEvent, this.updateKeyboardSpace);
+    KeyboardEventEmitter.off(KeyboardEvents.KeyboardWillHideEvent, this.resetKeyboardSpace);
+  },
+
+  /*inputFocused : function (refName) {
+    console.log(refName);
+    setTimeout(() => {
+      let scrollResponder = this.refs.scrollView.getScrollResponder();
+      console.log(scrollResponder);
+      scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
+        React.findNodeHandle(this.refs[refName]),
+        110, //additionalOffset
+        true
+      );
+    }, 50);
+  },*/
+
+  //onFocus={this.inputFocused.bind(this, 'email')}
+
+  //onFocus={this.inputFocused.bind(this, 'password')}
+
+   render: function(){
+    var content = (
+      <View style={styles.container}>
+          <View style={ styles.header}>
+           <Image style={ styles.qtTitle } source={ require('image!quotailTransparentBackground')}/>
+          </View>  
+            <View style={styles.bg}/>
+           
                 <View style={styles.inputContainer}>
                     <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/iVVVMRX.png'}}/>
                     <TextInput 
                         style={[styles.input, styles.whiteFont]}
                         placeholder="E-mail"
                         placeholderTextColor="#FFF"
+                        ref='email'
                         onChangeText={(text) => this.setState({username:text})}
+                       
+                        
                     />
                 </View>
                 <View style={styles.inputContainer}>
@@ -58,15 +99,21 @@ var Login = React.createClass({
                         style={[styles.input, styles.whiteFont]}
                         placeholder="Password"
                         placeholderTextColor="#FFF"
+                        ref='password'
                         onChangeText={(text) => this.setState({password:text})}
+                        
+                        
+                        
                     />
                 </View>
+                
+                
                 <TouchableHighlight underlayColor='transparent' onPress={ this.forgotPassword }>
                 <View style={styles.forgotContainer}>
                     <Text style={styles.greyFont}>Forgot Password</Text>
                 </View>
                 </TouchableHighlight>
-            </View>
+          
             
             <TouchableHighlight underlayColor='transparent' onPress={this.signIn}>
             <View style={styles.signin}>
@@ -80,28 +127,51 @@ var Login = React.createClass({
             </View>
             </TouchableHighlight>
         </View>
+
+
+    );
+   
+    return (
+      <View style={ styles.sview} >
+        {content}
+        <View style={{height: this.state.keyboardSpace}}></View>
+      </View>
+
+        
     );
   }
 });
 var styles = StyleSheet.create({
+    sview:{
+      flex:1,
+      backgroundColor: GlobalConstants.colors.gray_dark,
+    },
     container: {
+      justifyContent: 'flex-start',
       flexDirection: 'column',
-      flex: 1,
-      backgroundColor: 'transparent'
+      flex:1,
+      backgroundColor: GlobalConstants.colors.gray_dark,
+      paddingTop:65,
     },
     bg: {
-        position: 'absolute',
-        left: 0,
-        top: 0,
-        width: GlobalConstants.deviceScreen.width,
-        height: GlobalConstants.deviceScreen.height,
-        backgroundColor:'#151B20'
+      width: GlobalConstants.deviceScreen.width,
+      backgroundColor:GlobalConstants.colors.gray_dark,
+      flex:1,
+    },
+    qtTitle:{
+      width:GlobalConstants.deviceScreen.width * .95,
+      height:GlobalConstants.deviceScreen.width * .2,
+      resizeMode:'contain'
+    },
+    title:{
+      fontSize:30,
+      color:GlobalConstants.colors.qtColor,
+      alignItems:'center',
     },
     header: {
         justifyContent: 'center',
         alignItems: 'center',
-        flex: .5,
-        backgroundColor: 'transparent'
+        flex:.75,
     },
     mark: {
         width: 150,
@@ -110,9 +180,12 @@ var styles = StyleSheet.create({
     signin: {
         backgroundColor: '#00a4b5',
         padding: 20,
-        alignItems: 'center'
+        alignItems: 'center',
+        marginBottom:20,
     },
     signup: {
+      paddingTop:7,
+      paddingBottom:7,
       justifyContent: 'center',
       alignItems: 'center',
       flex: .15
@@ -154,7 +227,8 @@ var styles = StyleSheet.create({
       color: '#D8D8D8'
     },
     whiteFont: {
-      color: '#FFF'
+      color: '#FFF',
+      fontSize:16,
     }
 })
 module.exports = Login;

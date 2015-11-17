@@ -13,15 +13,16 @@ var GlobalStyles = StyleSheet.create({
 	},
 
 	light_gray:{
-		color:'#AAAAAA'
+		color:'#AAAAAA',
+		padding:2,
 	},
 
 	green:{
-		color:'green'
+		color:'#4CAF50'
 	},
 
 	red:{
-		color:'red'
+		color:'#FF0000'
 	},
 
 	darker_gray:{

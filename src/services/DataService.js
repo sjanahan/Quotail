@@ -52,10 +52,10 @@ class DataService{
     	console.log(Obj);
 
 	    fetch(url, Obj).then(function (res) {
-	      console.log("making authenticated request");
-	      console.log(res);
+	      //console.log("making authenticated request");
+	      //console.log(res);
 	      res.json().then(function(data){
-	      	console.log(data);
+	      	//console.log(data);
 	        deferred.resolve(data);
 	      });
 	    });
@@ -228,7 +228,7 @@ class DataService{
 
 		var DELETE_TICKER_URL = WATCHLIST_TICKER_URL + ticker;
 		this.do_request("DELETE", DELETE_TICKER_URL ).then(function(data){
-			console.log("got the filter list");
+			console.log("deleting ticker" + ticker );
 			console.log(data);
 			deferred.resolve(data);
 		})
@@ -239,7 +239,7 @@ class DataService{
 	getScanList(){
 		var deferred = Q.defer();
 		
-		this.do_request("GET", SCAN_URL +'/list').then(function(data){
+		this.do_request("GET", SCAN_URL +'list').then(function(data){
 			console.log("got the filter list");
 			console.log(data);
 			deferred.resolve(data);

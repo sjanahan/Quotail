@@ -41,7 +41,7 @@ var Watchlist = React.createClass({
 	},
 
 	getInitialState(){
-		console.log("initializing watchlist");
+		//console.log("initializing watchlist");
   		//  datasource rerendered when change is made (used to set Swipeout to active)
   		var ds = new ListView.DataSource({rowHasChanged: (row1, row2) => true})
 
@@ -54,9 +54,9 @@ var Watchlist = React.createClass({
 
 	openChat(item){
 		item.new_hits = undefined;
-		console.log("ONPRESSED")
+		//console.log("ONPRESSED")
 		this.props.navigator.push({
-      		title: `${item.ticker} Hits`,
+      		title: `Hits`,
       		component: MessageView,
       		passProps: { item }
     	});
@@ -66,7 +66,7 @@ var Watchlist = React.createClass({
 
 
 	/*handleSwipeout(sectionID, rowID) {
-	  console.log(this.refs);
+	  //console.log(this.refs);
 	  //this.refs.accordian.open();
 	  var copy = this.state.watchlist.slice();
 	  
@@ -78,7 +78,7 @@ var Watchlist = React.createClass({
 	},*/
 
 	handleExpand(sectionID, rowID) {
-	  console.log(this.refs);
+	  //console.log(this.refs);
 	  //this.refs.accordian.open();
 	  var copy = this.state.watchlist.slice();
 	  
@@ -90,19 +90,17 @@ var Watchlist = React.createClass({
 	},
 
 	updateDataSource(data){
-		console.log("updating...");
-		console.log(data);
+		//console.log("updating...");
+		//console.log(data);
 		this.setState({
 			watchlist: data,
 			dataSource: this.state.dataSource.cloneWithRows(data),
 		});
-
-		console.log(this.state.watchlist);
 	},
 
 
 	/*renderContracts(msg){
-		//console.log(msg);
+		////console.log(msg);
 		var context = this;
 		
 			return(
@@ -115,21 +113,26 @@ var Watchlist = React.createClass({
 			
 	},*/
 
-	handleSwipeout(sectionID, watchlist_row_index, rowID) {
-	  console.log("HANDLING SWIPEOUT");
-	  console.log(watchlist_row_index + " " + rowID);
-	  var copy = this.state.watchlist.slice();
+	/*handleSwipeout(sectionID, watchlist_row_index, rowID) {
+	  //console.log("HANDLING SWIPEOUT");
+	  //console.log(watchlist_row_index + " " + rowID);
+	  //var copy = this.state.watchlist.slice();
+	  var copy = this.state.watchlist[watchlist_row_index].contracts.slice();
 	  
-	  for (var i = 0; i < copy[watchlist_row_index].messages.length; i++) {
-	    if (i != rowID) copy[watchlist_row_index].messages[i].active = false
-	    else copy[watchlist_row_index].messages[i].active = true
+	  for (var i = 0; i < copy.length; i++) {
+	    if (i != rowID) copy[i].active = false
+	    else copy[i].active = !copy[i].active
 	  }
-	  this.updateDataSource(copy)
-	},
+
+	  this.state.watchlist[watchlist_row_index].contracts = copy;
+
+
+	  this.updateDataSource(this.state.watchlist);
+	},*/
 
 
 	renderRow(item, sec, i){
-		console.log(item);
+		//console.log(item);
 		var context = this;
 		var numAlertsText;
 		if (item.new_hits == undefined){
@@ -154,11 +157,13 @@ var Watchlist = React.createClass({
 			
 		);
 
-  		var plus_or_minus;
+  		var plus_or_minus = (<View style={styles.expandView}>
+								<Text style={styles.expand}> > </Text>
+							</View>)
 		if (item.show_contracts){
-			plus_or_minus = (<Text style={styles.expand}> -  </Text>);
-		}else{
-			plus_or_minus = (<Text style={styles.expand}> > </Text>);
+			plus_or_minus = (<View style={styles.expandView}>
+								<Text style={styles.expand}> - </Text>
+								</View>);
 		}
 		
 		/*var headerContent =  (
@@ -196,7 +201,7 @@ var Watchlist = React.createClass({
           				{plus_or_minus}
           			</TouchableHighlight>
 					<View style={ styles.textContainer }>
-						<Text style={ styles.name }>{item.ticker } </Text>
+						<Text style={ styles.name }>{item.ticker } {"\t"} {item.change_pct.toFixed(2)}% today</Text>
 					</View>
 					{numAlertsText}
 				</View>	
@@ -205,15 +210,15 @@ var Watchlist = React.createClass({
 			</View>	
 		);
 
-		console.log("How many messages?" + item.messages.length);
+		//console.log("How many messages?" + item.contracts.length);
 		
 		if (!item.show_contracts){
 			content = (<View></View>);
 		}else{
-			content = (<ContractList contracts={item.messages} handleSwipeout={this.handleSwipeout} removeContract={this.removeContract} watchlist_row={i}/>);
+			content = (<ContractList contracts={item.contracts} removeContract={this.removeContract} watchlist_row={i}/>);
 		}
 
-		//console.log("made contract list");
+		////console.log("made contract list");
 		//var accordian = (
 			
 		return (
@@ -226,13 +231,13 @@ var Watchlist = React.createClass({
 
 
 	removeTicker(i){
-		console.log("REMOVING " + this.state.watchlist[i].ticker);
+		//console.log("REMOVING " + this.state.watchlist[i].ticker);
 
-		DataService.deleteTickerFromWatchlist(this.state.watchlist[i].ticker).then(function(data){
-			console.log('removed from watchlist');
+		/*DataService.deleteTickerFromWatchlist(this.state.watchlist[i].ticker).then(function(data){
+			//console.log('removed from watchlist');
 
 
-		});
+		});*/
 		var copy = this.state.watchlist.slice();
 	    copy.splice(i,1);
 	    
@@ -240,26 +245,26 @@ var Watchlist = React.createClass({
 	},
 
 	removeContract(watchlist_row_index, contract_index){
-		console.log("!!" + watchlist_row_index + " "  + contract_index);
+		//console.log("!!" + watchlist_row_index + " "  + contract_index);
 
-		console.log(this.state.watchlist[watchlist_row_index].messages[contract_index].contract_symbol);
-		DataService.deleteContractFromWatchlist(this.state.watchlist[watchlist_row_index].messages[contract_index].contract_symbol).then(function(data){
-			console.log('removed contract from watchlist');
+		//console.log(this.state.watchlist[watchlist_row_index].contracts[contract_index].contract_symbol);
+		DataService.deleteContractFromWatchlist(this.state.watchlist[watchlist_row_index].contracts[contract_index].contract_symbol).then(function(data){
+			//console.log('removed contract from watchlist');
 
 
 		});
 
 		//network call to DB
 		var copy = this.state.watchlist.slice();
-		console.log("how many contracts?" + copy[watchlist_row_index].messages.length);
+		//console.log("how many contracts?" + copy[watchlist_row_index].contracts.length);
 		
-		copy[watchlist_row_index].messages[contract_index] = {};
-		copy[watchlist_row_index].messages.splice(contract_index,1);
+		copy[watchlist_row_index].contracts[contract_index] = {};
+		copy[watchlist_row_index].contracts.splice(contract_index,1);
 
-		if (copy[watchlist_row_index].messages.length == 0){
+		if (copy[watchlist_row_index].contracts.length == 0){
 			this.removeTicker(watchlist_row_index);
 		}else{
-			console.log("how many contracts? after removing" + copy[watchlist_row_index].messages.length);
+			//console.log("how many contracts? after removing" + copy[watchlist_row_index].contracts.length);
 	    	this.updateDataSource(copy);
 		}
 
@@ -280,7 +285,8 @@ var Watchlist = React.createClass({
 						ref={component => this._root = component}{...this.props} 
 						initialListSize={this.state.watchlist.length} 
 						dataSource={ this.state.dataSource } 
-						renderRow={ this.renderRow } />
+						renderRow={ this.renderRow } 
+						pageSize={1}/>
 				</View>
 			);
 		}
@@ -294,12 +300,24 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#e6e6e6',
+    backgroundColor: GlobalConstants.colors.gray_dark,
     width:deviceScreen.width,
     height:deviceScreen.height,
   },
+  expandView:{
+  	width:44,
+  	height:44,
+  	justifyContent:'center',
+  	alignItems:'center',
+  },
+  expandButton:{
+  	resizeMode:'contain',
+  	width:44,
+  	height:44,
+  },
   expand : {
   	fontSize: 22,
+  	color:GlobalConstants.colors.text_gray
   },
   row:{
   	flex:1,
@@ -346,7 +364,7 @@ var styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 2,
-    color:'#668086',
+    color:GlobalConstants.colors.text_gray,
     textAlign:'left',
   },
   time: {
@@ -364,7 +382,7 @@ var styles = StyleSheet.create({
   },
   lastMessage: {
     color: '#999999',
-    fontSize: 16
+    fontSize: 22
   },
 });
 

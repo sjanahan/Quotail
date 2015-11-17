@@ -26,9 +26,7 @@ var FilterPage = React.createClass({
             });
     return {
       filterlist: [],
-      dataSource:ds, 
-      
-      //filterlist:[],
+      dataSource:ds,
     };
   },
 
@@ -46,16 +44,20 @@ var FilterPage = React.createClass({
     this.context.menuActions.close();
   },
 
-  updateDataSource(data){
+  updateDataSource(_data){
+    //var _data = data;
     this.setState({
-      filterlist: data,
-      dataSource: this.state.dataSource.cloneWithRows(data),
+      filterlist: _data,
+      dataSource: this.state.dataSource.cloneWithRows(_data),
     })
   },
 
   toggleBolt(i){
-    DataService.toggleScanActivation(this.state.filterlist[i].metadata.id);
-    
+    console.log(this.state.filterlist[i].metadata);
+    if(this.state.filterlist[i].metadata.isGlobal == true){
+      console.log('Can not toggle a global filter');
+      return;
+    }
 
     if (this.state.filterlist[i].metadata.isActivated == true){
       console.log("deactivating scan");
@@ -63,10 +65,13 @@ var FilterPage = React.createClass({
       console.log("activting scan");
     }
 
+    DataService.toggleScanActivation(this.state.filterlist[i].metadata.id);
     // toggling isActivated on that scan name
-    this.state.filterlist[i].metadata.isActivated = !this.state.filterlist[i].metadata.isActivated;
+    
 
     var copy = this.state.filterlist.slice();
+    copy[i].metadata.isActivated = !copy[i].metadata.isActivated;
+
     copy[i] = {
       metadata : copy[i].metadata,
       definition: copy[i].definition,
@@ -76,52 +81,62 @@ var FilterPage = React.createClass({
   },
 
   renderBolt(item, i){
-    //console.log("rerendering  " +  i);
+    console.log("rerendering  " +  i);
     if (item.metadata.isActivated === true){
-      return(
-        <TouchableHighlight underlayColor={'white'} onPress={ ()=>{this.toggleBolt(i);} }>
-          <Image source={require('image!filter_activated')}/>
+      var yellow_bolt=(
+      
+        <TouchableHighlight onPress={ ()=>{this.toggleBolt(i);} }>
+          <View style={ styles.boltView }>
+            <Image source={require('image!filter_activated')}/>
+          </View>
         </TouchableHighlight>
       );
+      return yellow_bolt;
     } else {
-      return(
-        <TouchableHighlight underlayColor={'white'} onPress={ ()=>{this.toggleBolt(i);} }>
-          <Image source={require('image!filter_deactivated')}/>
+      var gray_bolt = (
+        <TouchableHighlight onPress={ ()=>{this.toggleBolt(i);} }>
+          <View style={ styles.boltView }>
+            <Image source={require('image!filter_deactivated')}/>
+          </View>
         </TouchableHighlight>
       );
+
+      return gray_bolt;
     }
   },
 
   renderRow(item, sec, i){
-    //console.log(item);
-    //console.log(sec);
-    //console.log(i);
-
-    //console.log(this.state.dataSource);
+    var isGlobal = item.metadata.isGlobal == true? (<Text> (Global) </Text>) : (<Text></Text>)
+    var renderBoltFn = this.renderBolt(item, i);
     return(
           <View>
           <View style={ styles.row }> 
             <View style={ styles.textContainer }>
               <Text style={ styles.name } numberOfLines={ 1 }>
-                { item.metadata.name } 
+                { item.metadata.name } {isGlobal}
               </Text>
             </View>
-            {this.renderBolt(item, i)}
+            {renderBoltFn}
           </View> 
           <View style={ styles.cellBorder } />
           
           </View>
-
-
     );
   },
 
   render(){
-    return(
-      <View style={styles.container}>
-        <ListView dataSource={ this.state.dataSource } renderRow={ this.renderRow } />
-      </View>
-    );
+   // if (this.state.loading == false){
+      return(
+        <View style={styles.container}>
+          <ListView 
+            dataSource={ this.state.dataSource } 
+            renderRow={ this.renderRow }
+            pageSize={1} />
+        </View>
+      );
+   /* }else{
+      return <View></View>
+    }*/
   }
 });
 	
@@ -134,17 +149,24 @@ var styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: '#e6e6e6',
+    backgroundColor: GlobalConstants.colors.gray_dark,
     width:deviceScreen.width,
     height:deviceScreen.height,
   },
   row:{
     flex:1,
     alignItems:'center',
-    backgroundColor:'white',
+    backgroundColor:GlobalConstants.colors.gray_dark,
     flexDirection:'row',
     padding:10,
     width:deviceScreen.width,
+  },
+  boltView:{
+    alignItems:'center',
+    width:44,
+    height:44,
+    flexDirection: 'column',
+    justifyContent:'center',
   },
   textContainer:{
     flex: 1,
@@ -160,7 +182,7 @@ var styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 2,
-    color:'#668086',
+    color:GlobalConstants.colors.text_white,
     alignItems:'center',
   },
   time: {
