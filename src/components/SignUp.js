@@ -8,6 +8,7 @@ var {
   Image,
   TouchableHighlight,
   ScrollView,
+  TouchableOpacity
 } = React;
 
 var GlobalConstants = require('../constants/GlobalConstants');
@@ -38,11 +39,11 @@ var SignUp = React.createClass({
     });
 
     return {
-      firstname:'mobile',
-      lastname:'test-lastname',
-      email: 'janahansivaraman+mobile86@gmail.com',
-      password: 'i9u8y7t6',
-      confirm_password: 'i9u8y7t6',
+      firstname:'',
+      lastname:'',
+      email: '',
+      password: '',
+      confirm_password: '',
       keyboardSpace:0
     }
   },
@@ -64,9 +65,11 @@ var SignUp = React.createClass({
     var content = (
         <View style={styles.container}>
           <View style = {styles.header} >
-          <TouchableHighlight onPress={ ()=>{RNFXActions.login();} }>
-            <Text style={styles.back}> Back to Login </Text>
-          </TouchableHighlight>
+          <TouchableOpacity onPress={ ()=>{RNFXActions.login();} }>
+            <View style={{width:120, height:44}}>
+              <Text style={ styles.back } > Back to Login </Text>
+            </View>
+          </TouchableOpacity>
           </View>
           <View style={styles.bg}/>
               <View style={styles.inputContainer}>
@@ -98,7 +101,8 @@ var SignUp = React.createClass({
               </View>
               <View style={styles.inputContainer}>
                   <Image style={styles.inputUsername} source={{uri: 'http://i.imgur.com/ON58SIG.png'}}/>
-                  <TextInput 
+                  <TextInput
+                      password={true} 
                       style={[styles.input, styles.whiteFont]}
                       placeholder="Password"
                       placeholderTextColor="#FFF"

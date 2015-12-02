@@ -9,6 +9,7 @@ var {
 	ListView,
 	Image,
 	TouchableHighlight,
+	TouchableOpacity,
 } = React;
 
 var MessageView = require('./MessageView');
@@ -24,37 +25,53 @@ var Loading = require('./Loading');
 var SwipeOut = require('react-native-swipeout');
 
 var ListItem = require('react-native-listitem');
+var FormatUtils = require('../services/FormatUtils');
 
 var ContractList = require('./ContractList');
 var tweenState = require('react-tween-state');
+var RefreshableListView = require('react-native-refreshable-listview')
+var Q = require('q');
+var GlobalStyles = require('../constants/GlobalStyles');
 
+var DataService = require('../services/DataService');
 
+var deleteImage = (<Image source={require('image!remove')}/>);
 
 const deviceScreen = Dimensions.get('window');
 
 var Watchlist = React.createClass({
-	componentWillMount(){
-		var context = this;
-		DataService.getWatchlist().then(function(watchlist_from_backend){
-			context.updateDataSource(watchlist_from_backend);
+	componentDidMount(){
+		if (this.isMounted() && this.props.watchlist != null){ //protects against first call for watchlist not finished yet
+			this.updateDataSource(this.props.watchlist);
+		}
+	},
+
+	componentWillUnmount(){
+		var watchlist = [];
+		this.updateDataSource(watchlist);
+		this.setState({
+			watchlist:null
 		});
 	},
 
-	getInitialState(){
-		//console.log("initializing watchlist");
-  		//  datasource rerendered when change is made (used to set Swipeout to active)
-  		var ds = new ListView.DataSource({rowHasChanged: (row1, row2) => true})
+	reloadWatchlist(){
+	    var context = this;
+	    DataService.getWatchlist().then(function(watchlist_from_backend){
+	      context.updateDataSource(watchlist_from_backend);
+	    }); 
+	},
 
+	getInitialState(){
+		var ds = new ListView.DataSource({rowHasChanged: (row1, row2) => true})
 		return {
 			watchlist:null,
-		    dataSource: ds
-		  }
+		    dataSource: ds,
+		};
 	},
 
 
 	openChat(item){
 		item.new_hits = undefined;
-		//console.log("ONPRESSED")
 		this.props.navigator.push({
       		title: `Hits`,
       		component: MessageView,
@@ -63,146 +80,64 @@ var Watchlist = React.createClass({
 
 	},
 
-
-
-	/*handleSwipeout(sectionID, rowID) {
-	  //console.log(this.refs);
-	  //this.refs.accordian.open();
-	  var copy = this.state.watchlist.slice();
-	  
-	  for (var i = 0; i < copy.length; i++) {
-	    if (i != rowID) copy[i].active = false
-	    else copy[i].active = !copy[i].active
-	  }
-	  this.updateDataSource(copy)
-	},*/
-
-	handleExpand(sectionID, rowID) {
-	  //console.log(this.refs);
-	  //this.refs.accordian.open();
-	  var copy = this.state.watchlist.slice();
-	  
-	  for (var i = 0; i < copy.length; i++) {
-	    if (i != rowID) copy[i].show_contracts = false
-	    else copy[i].show_contracts = !copy[i].show_contracts
-	  }
-	  this.updateDataSource(copy)
-	},
-
 	updateDataSource(data){
-		//console.log("updating...");
-		//console.log(data);
+		console.log(data);
+		this.forceUpdate();
 		this.setState({
 			watchlist: data,
 			dataSource: this.state.dataSource.cloneWithRows(data),
 		});
 	},
 
-
-	/*renderContracts(msg){
-		////console.log(msg);
-		var context = this;
-		
-			return(
-				<View style= {styles.contractRow} >
-					<Text style={ styles.lastMessage } numberOfLines={ 1 }>
-						{msg}
-					</Text>
-				</View>
-			);
-			
-	},*/
-
-	/*handleSwipeout(sectionID, watchlist_row_index, rowID) {
-	  //console.log("HANDLING SWIPEOUT");
-	  //console.log(watchlist_row_index + " " + rowID);
-	  //var copy = this.state.watchlist.slice();
-	  var copy = this.state.watchlist[watchlist_row_index].contracts.slice();
-	  
-	  for (var i = 0; i < copy.length; i++) {
-	    if (i != rowID) copy[i].active = false
-	    else copy[i].active = !copy[i].active
-	  }
-
-	  this.state.watchlist[watchlist_row_index].contracts = copy;
-
-
-	  this.updateDataSource(this.state.watchlist);
-	},*/
-
-
 	renderRow(item, sec, i){
-		//console.log(item);
+		if (item.removed){
+			return null;
+		}
+		
 		var context = this;
 		var numAlertsText;
 		if (item.new_hits == undefined){
-			numAlertsText = <Text/>
+			numAlertsText = <View style={styles.numAlertsViewNone}>
+								<Text style={styles.numAlertsNone}> 
+								0
+								</Text>
+							</View>
 		}else{
-			numAlertsText = <Text style={ styles.numAlerts} > {item.new_hits} </Text>
-		}
-
-		/*var swipeoutBtns = [
-  		{
-  			backgroundColor:GlobalConstants.colors.red,
-    		text: 'Delete',
-    		onPress: ()=>{this.removeTicker(i)},
-  		}];*/
-
-  		//var swipeoutBtns = [];
-
-  		var goToMessageThread=(
-			<TouchableHighlight onPress={ this.openChat.bind(this, item) }>
-				<Text>></Text>
-			</TouchableHighlight>
-			
-		);
-
-  		var plus_or_minus = (<View style={styles.expandView}>
-								<Text style={styles.expand}> > </Text>
+			numAlertsText = (<View style={styles.numAlertsView}>
+								<Text style={styles.numAlerts}> 
+								{item.new_hits} 
+								</Text>
 							</View>)
-		if (item.show_contracts){
-			plus_or_minus = (<View style={styles.expandView}>
-								<Text style={styles.expand}> - </Text>
-								</View>);
 		}
-		
-		/*var headerContent =  (
-			
-			<SwipeOut 
-				right={swipeoutBtns}
-				rowID={i}
-          		close={!item.active}
-          		onOpen={(sec, i) => this.handleSwipeout(sec, i)}>
-          		<TouchableHighlight onPress={ this.openChat.bind(this, item) }> 
-          		<View style={ styles.row }>
-          			<TouchableHighlight onPress={()=>{this.handleExpand(sec, i)}}>
-          				{plus_or_minus}
-          			</TouchableHighlight>
-					<View style={ styles.textContainer }>
-						<Text style={ styles.name }>{item.ticker } </Text>
-					</View>
-					{numAlertsText}
-				</View>	
-				</TouchableHighlight > 
-				<View style={ styles.cellBorder } />
-			
-			</SwipeOut>
-			
-			
-		);*/
 
+		var ticker_chg;
+		if (item.change_pct > 0){
+			ticker_chg = (<Text style = {GlobalStyles.green}>
+			{item.last}({item.change_pct.toFixed(2)}%)
+			</Text>);
+		}else if (item.change_pct < 0){
+			ticker_chg = (<Text style = {GlobalStyles.red}>
+			{item.last}({item.change_pct.toFixed(2)}%)
+			</Text>);
 
+		}else{
+			ticker_chg = (<Text style = {{color:GlobalConstants.colors.text_white, }}>
+			{item.last}({item.change_pct.toFixed(2)}%)
+			</Text>);			
+		}
 
 		var headerContent =  (
 			<View>
           		<TouchableHighlight onPress={ this.openChat.bind(this, item) }> 
-          		<View style={ styles.row }>
-          			<TouchableHighlight onPress={()=>{this.handleExpand(sec, i)}}>
-          				{plus_or_minus}
-          			</TouchableHighlight>
+          		<View style={ styles.ticker_row }>
+          			
 					<View style={ styles.textContainer }>
-						<Text style={ styles.name }>{item.ticker } {"\t"} {item.change_pct.toFixed(2)}% today</Text>
+						<Text style={ styles.name }>{item.ticker}</Text>
 					</View>
+					<View style={ styles.percentContainer}>
+						{ticker_chg}
+					</View>
+
 					{numAlertsText}
 				</View>	
 				</TouchableHighlight > 
@@ -210,16 +145,55 @@ var Watchlist = React.createClass({
 			</View>	
 		);
 
-		//console.log("How many messages?" + item.contracts.length);
+		var context = this;
 		
-		if (!item.show_contracts){
-			content = (<View></View>);
-		}else{
-			content = (<ContractList contracts={item.contracts} removeContract={this.removeContract} watchlist_row={i}/>);
-		}
+		content = (item.contracts.map(function(contract_obj, c_i){
+					var mid_orig = (contract_obj.ask+contract_obj.bid/2);
+					var mid_now = (contract_obj.curr_ask+contract_obj.curr_bid/2)
+			  		var percentage_change_since_added =  (((mid_now - mid_orig) / mid_orig) * 100).toFixed(2);
+			  		var percent_text;
+			  		if (isNaN(percentage_change_since_added)){
+			  			percent_text = (<Text style = {{color:GlobalConstants.colors.text_white, }}> "EXPIRED" </Text>);
+			  		}else{
+						if (percentage_change_since_added > 0){
+							percent_text = (<Text style = {GlobalStyles.green}>
+							{percentage_change_since_added}%
+							</Text>);
+						}else if (percentage_change_since_added  < 0){
+							percent_text  = (<Text style = {GlobalStyles.red}>
+							{percentage_change_since_added}%
+							</Text>);
 
-		////console.log("made contract list");
-		//var accordian = (
+						}else{
+							percent_text  = (<Text style = {{color:GlobalConstants.colors.text_white, }}>
+							{percentage_change_since_added}%
+							</Text>);			
+						}
+			  		}
+					
+					console.log(contract_obj);
+					if (contract_obj.removed != true){
+						return (
+							<View style= {styles.row} key={c_i}>
+								<View style={ styles.textContainer}>
+									<Text style={ styles.contractRow } numberOfLines={ 1 }>
+										{FormatUtils.normalizeSymbol(contract_obj.contract_symbol)}       
+									</Text>
+								</View>
+								<View style={ styles.percentContainer }>
+									{percent_text}
+								</View>
+								<TouchableOpacity onPress={ ()=> {context.removeContract(i, c_i)} } >
+									<View style={styles.deleteView}>
+										{deleteImage}
+									</View>
+								</TouchableOpacity>
+							</View>
+
+						)
+					}
+					}));
+			//content = null;
 			
 		return (
 		<View>
@@ -231,41 +205,29 @@ var Watchlist = React.createClass({
 
 
 	removeTicker(i){
-		//console.log("REMOVING " + this.state.watchlist[i].ticker);
-
-		/*DataService.deleteTickerFromWatchlist(this.state.watchlist[i].ticker).then(function(data){
-			//console.log('removed from watchlist');
-
-
-		});*/
-		var copy = this.state.watchlist.slice();
-	    copy.splice(i,1);
-	    
-	    this.updateDataSource(copy);
+		this.state.watchlist[i].removed = true;
+	    this.updateDataSource(this.state.watchlist);
 	},
 
 	removeContract(watchlist_row_index, contract_index){
-		//console.log("!!" + watchlist_row_index + " "  + contract_index);
-
-		//console.log(this.state.watchlist[watchlist_row_index].contracts[contract_index].contract_symbol);
 		DataService.deleteContractFromWatchlist(this.state.watchlist[watchlist_row_index].contracts[contract_index].contract_symbol).then(function(data){
-			//console.log('removed contract from watchlist');
-
-
 		});
 
-		//network call to DB
-		var copy = this.state.watchlist.slice();
-		//console.log("how many contracts?" + copy[watchlist_row_index].contracts.length);
+		this.state.watchlist[watchlist_row_index].contracts[contract_index].removed = true;
 		
-		copy[watchlist_row_index].contracts[contract_index] = {};
-		copy[watchlist_row_index].contracts.splice(contract_index,1);
+		var tickerHasActiveContracts = false;
+		for (var i = 0; i< this.state.watchlist[watchlist_row_index].contracts.length; i++){
+			if (this.state.watchlist[watchlist_row_index].contracts[i].removed != true){
+				tickerHasActiveContracts = true;
+				break;
+			}
+		}
 
-		if (copy[watchlist_row_index].contracts.length == 0){
+
+		if (tickerHasActiveContracts == false){
 			this.removeTicker(watchlist_row_index);
 		}else{
-			//console.log("how many contracts? after removing" + copy[watchlist_row_index].contracts.length);
-	    	this.updateDataSource(copy);
+	    	this.updateDataSource(this.state.watchlist);
 		}
 
 
@@ -273,6 +235,7 @@ var Watchlist = React.createClass({
 
 	render(){
 		if (this.state.watchlist == null){
+			this.reloadWatchlist();
 			return <Loading/>
 		}
 		else if (this.state.watchlist.length == 0){
@@ -280,19 +243,57 @@ var Watchlist = React.createClass({
 		} 
 		else{
 			return(
+
 				<View style={styles.container} >
-					<ListView
+					<RefreshableListView
 						ref={component => this._root = component}{...this.props} 
-						initialListSize={this.state.watchlist.length} 
 						dataSource={ this.state.dataSource } 
 						renderRow={ this.renderRow } 
-						pageSize={1}/>
+						loadData={ this.reloadWatchlist }
+						refreshDescription={<Text style={{color:GlobalConstants.colors.text_white}}>Retrieving watchlist</Text>}
+						pageSize={1}
+						refreshingIndictatorComponent={
+            				<RefreshableListView.RefreshingIndicator stylesheet={indicatorStylesheet} />
+          				}/>
 				</View>
 			);
 		}
 	}
 
 }); 
+
+/*
+				<View style={styles.container} >
+					<ListView
+						ref={component => this._root = component}{...this.props} 
+						dataSource={ this.state.dataSource } 
+						renderRow={ this.renderRow } 
+						pageSize={1}/>
+				</View>*/
+/*
+				<View style={styles.container} >
+					<RefreshableListView
+						ref={component => this._root = component}{...this.props} 
+						dataSource={ this.state.dataSource } 
+						renderRow={ this.renderRow } 
+						loadData={ this.reloadWatchlist }
+						refreshDescription={<Text style={{color:GlobalConstants.colors.text_white}}>Retrieving watchlist</Text>}
+						pageSize={1}
+						refreshingIndictatorComponent={
+            				<RefreshableListView.RefreshingIndicator stylesheet={indicatorStylesheet} />
+          				}/>
+				</View>*/
+
+var indicatorStylesheet = StyleSheet.create({
+  wrapper: {
+  	flex:1,
+  	alignSelf:'center',
+    backgroundColor: GlobalConstants.colors.gray_dark,
+    height: 60,
+    marginTop: 10,
+    flexDirection:'column'
+  },
+})
 
 
 var styles = StyleSheet.create({
@@ -305,10 +306,17 @@ var styles = StyleSheet.create({
     height:deviceScreen.height,
   },
   expandView:{
-  	width:44,
-  	height:44,
+  	width:60,
+  	height:60,
   	justifyContent:'center',
   	alignItems:'center',
+  },
+   deleteView:{
+  	alignItems:'center',
+  	flexDirection: 'row',
+  	justifyContent:'flex-start',
+  	padding:4,
+  	paddingRight:8
   },
   expandButton:{
   	resizeMode:'contain',
@@ -319,27 +327,70 @@ var styles = StyleSheet.create({
   	fontSize: 22,
   	color:GlobalConstants.colors.text_gray
   },
+  ticker_row:{
+  	flex:1,
+  	alignItems:'center',
+  	justifyContent:'space-between',
+  	backgroundColor:GlobalConstants.colors.gray_dark,
+  	flexDirection:'row',
+  	width:deviceScreen.width,
+  	paddingLeft:10,
+  	paddingRight:10,
+  	paddingTop:10,
+  	paddingBottom:10,
+  },
   row:{
   	flex:1,
   	alignItems:'center',
-  	backgroundColor:GlobalConstants.colors.gray_dark,
+  	justifyContent:'space-between',
+  	backgroundColor:GlobalConstants.colors.gray_mid,
   	flexDirection:'row',
-  	padding:10,
   	width:deviceScreen.width,
-  },
-
-  numAlertsView:{
-  	backgroundColor:GlobalConstants.colors.yellow,
-  },
-  numAlerts:{
-  	backgroundColor:GlobalConstants.colors.yellow,
-  	color:GlobalConstants.colors.gray_dark,
-  	textAlign:'center'
+  	paddingLeft:10,
   },
   contractRow:{
   	flex:1,
   	alignItems:'center',
-  	backgroundColor:'white',
+  	justifyContent:'space-between',
+  	flexDirection:'row',
+  	width:deviceScreen.width,
+  	paddingLeft:10,
+  },
+
+  numAlertsView:{
+  	backgroundColor:GlobalConstants.colors.yellow,
+  	borderColor:GlobalConstants.colors.yellow,
+  	borderRadius:10,
+  	borderWidth:3,
+  	marginTop:2,
+  	marginBottom:2,
+  },
+  numAlerts:{
+  	backgroundColor:GlobalConstants.colors.yellow,
+  	color:GlobalConstants.colors.gray_dark,
+  	textAlign:'center',
+  	padding:2,
+  },
+  numAlertsViewNone:{
+  	backgroundColor:GlobalConstants.colors.gray_dark,
+  	borderColor:GlobalConstants.colors.gray_dark,
+  	borderRadius:10,
+  	borderWidth:3,
+  	marginTop:2,
+  	marginBottom:2,
+  },
+  numAlertsNone:{
+  	backgroundColor:GlobalConstants.colors.gray_dark,
+  	color:GlobalConstants.colors.gray_dark,
+  	textAlign:'center',
+  	padding:2,
+  },
+  contractRow:{
+  	flex:1,
+  	alignItems:'center',
+  	justifyContent:'space-between',
+  	backgroundColor:GlobalConstants.colors.gray_mid,
+  	color:GlobalConstants.colors.text_white,
   	flexDirection:'row',
   	padding:6,
   	width:deviceScreen.width,
@@ -347,6 +398,12 @@ var styles = StyleSheet.create({
 
   textContainer:{
   	flex: 1,
+  	justifyContent:'flex-start'
+  },
+
+  percentContainer:{
+  	flex:1,
+  	justifyContent:'flex-end'
   },
   cellImage: {
     height: 60,
@@ -376,9 +433,8 @@ var styles = StyleSheet.create({
   },
 
   cellBorder: {
-    backgroundColor: '#F2F2F2',
+    backgroundColor: GlobalConstants.colors.gray_mid,
     height: 1 / PixelRatio.get(),
-    marginLeft: 4
   },
   lastMessage: {
     color: '#999999',

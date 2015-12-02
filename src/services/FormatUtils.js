@@ -2,7 +2,7 @@ var sprintf = require('sprintf');
 
 class FormatUtils{
     parseOptionContract(contractSymbol) {
-    	console.log(contractSymbol);
+    	//console.log(contractSymbol);
         var optionContractRegex = /\.?([A-Z\-\.\d]+)(\d{2})(\d{2})(\d{2})([PC])(.*)/;
         var opContractstrikeRegex = /(\d{5})(\d{3})/;
 

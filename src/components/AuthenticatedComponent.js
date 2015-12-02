@@ -17,14 +17,10 @@ var AuthenticatedWrapper = function(ComposedComponent){
     // Here, we’re subscribing to changes in the LoginStore we created before. 
     // Remember that the LoginStore is an EventEmmiter.
     componentWillMount() {
-      //console.log(this);
-      console.log("checking auth");
       /*This method is called before transitioning to this component. 
       If the user is not logged in, we’ll send him or her to the Login page.*/
       if (!LoginStore.isLoggedIn()) {
         LoginActions.logout();
-      }else{
-        console.log(LoginStore.get_jwt())
       }
     }
 

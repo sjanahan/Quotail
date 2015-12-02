@@ -20,6 +20,7 @@ var SwipeOut = require('react-native-swipeout');
 var FormatUtils = require('../services/FormatUtils');
 
 var Listitem = require('react-native-listitem');
+var deleteImage = (<Image source={require('image!remove')}/>);
 
 var {
 	deviceScreen
@@ -31,7 +32,7 @@ var ContractList = React.createClass({
 		return {
 			//contracts : this.props.contracts,
 			dataSource: new ListView.DataSource({
-				rowHasChanged:(r1,r2) => r1 !== r2
+				rowHasChanged:(r1,r2) => true
 			}),
 		};
 	},
@@ -51,15 +52,19 @@ var ContractList = React.createClass({
 
 
 	renderRow(item, sec, i){
-		console.log(item);
-		if (item == undefined){
-			return <View></View>;
+		//console.log(item);
+		if (item.removed){
+			console.log('removed');
+			console.log(item);
+			return null;
 		}
-		////console.log(i + " " + JSON.parse(item));
-		//this.setNativeProps(this.props);
-		////console.log(this);
+
+		if (item == undefined){
+			console.log('undefined');
+			console.log(item);
+			return null;
+		}
 		var context = this;
-		////console.log(this);
 
 		var swipeoutBtns = [
   		{
@@ -68,30 +73,29 @@ var ContractList = React.createClass({
     		onPress: ()=>{this.props.removeContract(this.props.watchlist_row, i)},
   		}];
 
-  		var percentage_change_since_added = 100* (((item.ask+item.bid/2) - (item.curr_ask+item.curr_bid/2))/ (item.ask+item.bid/2)).toFixed(2);
+  		var percentage_change_since_added =  ((((item.ask+item.bid/2) - (item.curr_ask+item.curr_bid/2))/ (item.ask+item.bid/2)) *100) .toFixed(2);
   		if (isNaN(percentage_change_since_added)){
   			percentage_change_since_added = "EXPIRED";
   		}else{
   			percentage_change_since_added += "% since added"
   		}
+
+  		/*
+  							/*<Text style={ styles.contractRow } numberOfLines={ 1 }>
+						{FormatUtils.normalizeSymbol(item.contract_symbol)}{"      "}{percentage_change_since_added}
+					</Text>*/
 		
 		var contract=(
-			/*<SwipeOut right={swipeoutBtns} 
-				rowID={i}
-          		close={!item.active}
-          		onOpen={(sec, i) => this.props.handleSwipeout(sec, this.props.watchlist_row, i)}>*/
-				<View style= {styles.row}>
-					<Text style={ styles.contractRow } numberOfLines={ 1 }>
-						{FormatUtils.normalizeSymbol(item.contract_symbol)}{"      "}        {percentage_change_since_added}
-					</Text>
-					<TouchableHighlight onPress={ ()=> {this.props.removeContract(this.props.watchlist_row, i)} } >
-						<View style={styles.deleteView}>
-							<Image style={{resizeMode:'contain'}} source={require('image!remove')}/>
-						</View>
-					</TouchableHighlight>
-				</View>
-			//</SwipeOut>
-		
+			<View style= {styles.row}>
+				<Text style={ styles.contractRow } numberOfLines={ 1 }>
+					{FormatUtils.normalizeSymbol(item.contract_symbol)}    {percentage_change_since_added}
+				</Text>
+				<TouchableHighlight onPress={ ()=> {this.props.removeContract(this.props.watchlist_row, i)} } >
+					<View style={styles.deleteView}>
+						{deleteImage}
+					</View>
+				</TouchableHighlight>
+			</View>
 		);
 
 		return (
@@ -100,14 +104,13 @@ var ContractList = React.createClass({
 	},
 
 	render(){
-		////console.log(this);
 		return(
 			<View style={styles.container}>
 				<ListView 
 				automaticallyAdjustContentInsets={false}
 				dataSource={this.state.dataSource} 
 				renderRow={this.renderRow}
-				pageSize={this.props.contracts.length}
+				pageSize={1}
 				initialListSize={this.props.contracts.length} 
 				ref={component => this._root = component}{...this.props} 
 				/>
@@ -123,7 +126,6 @@ var ContractList = React.createClass({
 
 var styles = StyleSheet.create({
   container: {
-  	paddingTop:0,
     flex: 1,
     backgroundColor: 'green',
     width:deviceScreen.width,
@@ -132,18 +134,20 @@ var styles = StyleSheet.create({
 	},
   deleteView:{
   	alignItems:'center',
-  	width:60,
-  	height:60,
-  	flexDirection: 'column',
-  	justifyContent:'center',
+  	width:66,
+  	height:33,
+  	flexDirection: 'row',
+  	justifyContent:'flex-end',
+  	padding:4,
   },
   row:{
+  	flex:1,
   	alignItems:'center',
   	backgroundColor:GlobalConstants.colors.gray_mid,
   	flexDirection:'row',
-  	padding:2,
   	width:deviceScreen.width,
-  	paddingLeft:20
+  	paddingLeft:2,
+  	paddingRight:2,
   },
 
   numAlertsView:{
@@ -160,8 +164,8 @@ var styles = StyleSheet.create({
   	alignItems:'center',
   	color:GlobalConstants.colors.text_white,
   	flexDirection:'row',
-  	padding:6,
   	width:deviceScreen.width,
+  	paddingLeft:10,
   },
 
   textContainer:{
@@ -195,7 +199,7 @@ var styles = StyleSheet.create({
   },
 
   cellBorder: {
-    backgroundColor: '#F2F2F2',
+    backgroundColor: GlobalConstants.colors.gray_dark,
     height: 1 / PixelRatio.get(),
     marginLeft: 4
   },

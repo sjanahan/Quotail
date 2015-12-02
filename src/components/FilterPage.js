@@ -18,11 +18,12 @@ var {
 } = GlobalConstants;
 
 var DataService = require('../services/DataService');
+var yellowbolt = (<Image source={require('image!filter_activated')}/>);
+var graybolt = (<Image source={require('image!filter_deactivated')}/>);
 var FilterPage = React.createClass({
   getInitialState(){
-    console.log("initializing filterlist");
     var ds = new ListView.DataSource({
-              rowHasChanged:(r1,r2) => r1 !== r2
+              rowHasChanged:(r1,r2) => true
             });
     return {
       filterlist: [],
@@ -34,18 +35,13 @@ var FilterPage = React.createClass({
     var context = this;
     // network call for filter names and definitions
     DataService.getScanList().then(function(data){
-      console.log('the filter page got the list');
-      //context.state.filterlist = data;
       context.updateDataSource(data);
-
-      console.log("set the state damnit");
 
     })
     this.context.menuActions.close();
   },
 
   updateDataSource(_data){
-    //var _data = data;
     this.setState({
       filterlist: _data,
       dataSource: this.state.dataSource.cloneWithRows(_data),
@@ -55,48 +51,30 @@ var FilterPage = React.createClass({
   toggleBolt(i){
     console.log(this.state.filterlist[i].metadata);
     if(this.state.filterlist[i].metadata.isGlobal == true){
-      console.log('Can not toggle a global filter');
       return;
     }
 
-    if (this.state.filterlist[i].metadata.isActivated == true){
-      console.log("deactivating scan");
-    }else{
-      console.log("activting scan");
-    }
-
     DataService.toggleScanActivation(this.state.filterlist[i].metadata.id);
-    // toggling isActivated on that scan name
-    
-
-    var copy = this.state.filterlist.slice();
-    copy[i].metadata.isActivated = !copy[i].metadata.isActivated;
-
-    copy[i] = {
-      metadata : copy[i].metadata,
-      definition: copy[i].definition,
-    };
-    
-    this.updateDataSource(copy);
+    this.state.filterlist[i].metadata.isActivated = !this.state.filterlist[i].metadata.isActivated;
+    this.updateDataSource(this.state.filterlist);
   },
 
   renderBolt(item, i){
-    console.log("rerendering  " +  i);
     if (item.metadata.isActivated === true){
       var yellow_bolt=(
       
-        <TouchableHighlight onPress={ ()=>{this.toggleBolt(i);} }>
+        <TouchableHighlight underlayColor={'transparent'} onPress={ ()=>{this.toggleBolt(i);} }>
           <View style={ styles.boltView }>
-            <Image source={require('image!filter_activated')}/>
+            {yellowbolt}
           </View>
         </TouchableHighlight>
       );
       return yellow_bolt;
     } else {
       var gray_bolt = (
-        <TouchableHighlight onPress={ ()=>{this.toggleBolt(i);} }>
+        <TouchableHighlight underlayColor={'transparent'} onPress={ ()=>{this.toggleBolt(i);} }>
           <View style={ styles.boltView }>
-            <Image source={require('image!filter_deactivated')}/>
+            {graybolt}
           </View>
         </TouchableHighlight>
       );
@@ -125,7 +103,6 @@ var FilterPage = React.createClass({
   },
 
   render(){
-   // if (this.state.loading == false){
       return(
         <View style={styles.container}>
           <ListView 
@@ -134,9 +111,6 @@ var FilterPage = React.createClass({
             pageSize={1} />
         </View>
       );
-   /* }else{
-      return <View></View>
-    }*/
   }
 });
 	
@@ -158,15 +132,15 @@ var styles = StyleSheet.create({
     alignItems:'center',
     backgroundColor:GlobalConstants.colors.gray_dark,
     flexDirection:'row',
-    padding:10,
     width:deviceScreen.width,
   },
   boltView:{
     alignItems:'center',
-    width:44,
+    width:88,
     height:44,
-    flexDirection: 'column',
-    justifyContent:'center',
+    flexDirection: 'row',
+    justifyContent:'flex-end',
+    padding:4,
   },
   textContainer:{
     flex: 1,
@@ -178,6 +152,7 @@ var styles = StyleSheet.create({
     width: 60
   },
   name: {
+    paddingLeft:10,
     flex: 1,
     fontSize: 16,
     fontWeight: 'bold',
@@ -194,7 +169,7 @@ var styles = StyleSheet.create({
   },
 
   cellBorder: {
-    backgroundColor: '#F2F2F2',
+    backgroundColor: GlobalConstants.colors.gray_dark,
     height: 1 / PixelRatio.get(),
     marginLeft: 4
   },

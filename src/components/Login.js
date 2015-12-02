@@ -19,21 +19,16 @@ var KeyboardEventEmitter = KeyboardEvents.Emitter;
 
 var Login = React.createClass({
   getInitialState: function() {
-
-    console.log(KeyboardEvents);
-    console.log(KeyboardEventEmitter);
     KeyboardEventEmitter.on(KeyboardEvents.KeyboardDidShowEvent, (frames) => {
-      console.log("DID SHOW");
       this.setState({keyboardSpace: frames.end.height});
     });
     KeyboardEventEmitter.on(KeyboardEvents.KeyboardWillHideEvent, (frames) => {
-      console.log("DID HIDE");
       this.setState({keyboardSpace: 0});
     });
 
     return {
-      username: 'janahansivaraman@gmail.com',
-      password: 'i9u8y7t6',
+      username: '',
+      password: '',
       keyboardSpace: 0,
     }
   },
@@ -54,23 +49,6 @@ var Login = React.createClass({
     KeyboardEventEmitter.off(KeyboardEvents.KeyboardDidShowEvent, this.updateKeyboardSpace);
     KeyboardEventEmitter.off(KeyboardEvents.KeyboardWillHideEvent, this.resetKeyboardSpace);
   },
-
-  /*inputFocused : function (refName) {
-    console.log(refName);
-    setTimeout(() => {
-      let scrollResponder = this.refs.scrollView.getScrollResponder();
-      console.log(scrollResponder);
-      scrollResponder.scrollResponderScrollNativeHandleToKeyboard(
-        React.findNodeHandle(this.refs[refName]),
-        110, //additionalOffset
-        true
-      );
-    }, 50);
-  },*/
-
-  //onFocus={this.inputFocused.bind(this, 'email')}
-
-  //onFocus={this.inputFocused.bind(this, 'password')}
 
    render: function(){
     var content = (

@@ -8,6 +8,7 @@ var {
   TextInput,
   Image,
   TouchableHighlight,
+  TouchableOpacity,
 } = React;
 
 var GlobalConstants = require('../constants/GlobalConstants');
@@ -25,16 +26,14 @@ var ForgotPassword = React.createClass({
 
   getInitialState: function() {
     KeyboardEventEmitter.on(KeyboardEvents.KeyboardDidShowEvent, (frames) => {
-      console.log("DID SHOW");
       this.setState({keyboardSpace: frames.end.height});
     });
     KeyboardEventEmitter.on(KeyboardEvents.KeyboardWillHideEvent, (frames) => {
-      console.log("DID HIDE");
       this.setState({keyboardSpace: 0});
     });
 
     return {
-      email: 'janahansivaraman+mobile67@gmail.com',
+      email: '',
       keyboardSpace:0
     }
   },
@@ -52,9 +51,11 @@ var ForgotPassword = React.createClass({
     var content = (
        <View style={styles.container}>
       <View style={ styles.header }>
-              <TouchableHighlight onPress={ ()=>{RNFXActions.login();} }>
-            <Text style={ styles.back } > Back to Login </Text>
-          </TouchableHighlight>
+          <TouchableOpacity onPress={ ()=>{RNFXActions.login();} }>
+            <View style={{width:120, height:44}}>
+              <Text style={ styles.back } > Back to Login </Text>
+            </View>
+          </TouchableOpacity>
       </View>
      
 

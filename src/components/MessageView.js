@@ -39,13 +39,11 @@ var MessageView = React.createClass({
 		var ticker = this.props.item.ticker;
 		var context = this;
 		DataService.getWatchlistHits(ticker).then(function(data){
-			console.log(data);
 			context.setState({
 				messageThread:data
 			});
 
 			DataService.clearWatchlistContractHits(ticker).then(function(data){
-				console.log("componentDidMount messageview cleared hits");
 			})
 		});
 	},
@@ -67,7 +65,6 @@ var MessageView = React.createClass({
 
 
 	render(){
-		//console.log(this.props);
 		var trade = this.getCurrentItem().symbol;
 		var getHumanReadableDate = this.getHumanReadableDate;
 		var context = this;

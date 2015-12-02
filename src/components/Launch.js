@@ -20,9 +20,8 @@ var Loading = require ('./Loading');
 
 var LocalStorage = require('../stores/LocalStorage');
 var AuthService = require('../services/AuthService');
+var LoginStore = require('../stores/LoginStore');
 
-/*var settings_uri = 'http://cdn.flaticon.com/png/256/70443.png';
-var msg_uri = 'http://cdn.flaticon.com/png/256/98.png';*/
 var Launch = React.createClass({
   getInitialState(){
     return {
@@ -30,24 +29,17 @@ var Launch = React.createClass({
     };  
   },
 
-  componentWillMount(){
+  componentDidMount(){
     var context = this;
-    /*LocalStorage.remove("jwt").then(function(){
-      console.log('removing')
-    });*/
     AuthService.isLoggedIn().then(function(bool){
-      //console.log('callback');
-      //console.log("Component did Mount");
       context.setState({
         isLoggedIn: bool
       });
-      //console.log('after setState')
     });
   },
 
   render(){
-    var fs;// = <NavBar/>;
-    //console.log(this.state.isLoggedIn);
+    var fs;
     if (this.state.isLoggedIn == null){
       fs = <Loading/>;
     }

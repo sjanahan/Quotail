@@ -121,7 +121,7 @@ class DataService{
 	getWatchlist(){
 		var deferred = Q.defer();
 		this.do_request("GET", WATCHLIST_URL).then(function(data){
-			console.log("getting watchlist" + data);
+			console.log("getting watchlist...");
 			// getting the watchlist needs to do a join on the hits table for scan names
 			// and append that onto to the object this function is resolved with
 			deferred.resolve(data);

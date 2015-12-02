@@ -19,7 +19,10 @@ var {
   Image,
   AlertIOS,
   ActivityIndicatorIOS,
+  TouchableOpacity,
 } = React;
+
+var Image = require('react-native-image-progress');
 
 var GlobalStyles = require('../constants/GlobalStyles');
 
@@ -124,28 +127,33 @@ class MainScreen extends Component{
 
 
   componentDidMount() {
-    var context = this;
-    console.log("MAIN SCREEN MOUNTING");
-    DataService.getHits().then(function(data){
-      console.log("THE STACK IS BACK");
-      //console.log(data);
-
-      var first_card = data.length == 0 ? no_more_cards: data[0];
-
-      context.setState({
-        STACK_OF_CARDS : data,
-        card:first_card,
-        stack_loading:false,
-      });
-
-
-      context._animateEntrance();
-    });
+    this.getMoreCards();
+    
     
     //this._animateEntrance();
+  }
+
+  getMoreCards(){
+    var context = this;
+    
+      console.log("MAIN SCREEN MOUNTING");
+      DataService.getHits().then(function(data){
+        console.log("THE STACK IS BACK");
+        console.log(data);
+
+        var first_card = data.length == 0 ? no_more_cards: data[0];
+
+        console.log(first_card);
+
+        context.setState({
+          STACK_OF_CARDS : data,
+          card:first_card,
+          stack_loading:false,
+        });
 
 
-   
+        context._animateEntrance();
+      });
   }
 
   _animateEntrance() {
@@ -178,10 +186,8 @@ class MainScreen extends Component{
         var velocity;
 
         if (vx > 0) {
-          console.log("to the right");
           velocity = clamp(vx, 3, 5);
         } else {
-          console.log("to the left");
           velocity = clamp(vx * -1, 3, 5) * -1;
         }
 
@@ -201,7 +207,6 @@ class MainScreen extends Component{
             deceleration: 0.985,
           }).start();
         } else {
-          console.log("Not past threshold");
           Animated.spring(this.state.pan, {
             toValue: {x: 0, y: 0},
             friction: 4
@@ -224,24 +229,17 @@ class MainScreen extends Component{
   }
 
   swipeRight(card){
-    console.log("swipe right");
-    console.log(card);
     _.each(card.hit_ids, function(hit_id){
       DataService.setAsDelivered(hit_id);
     })
 
     DataService.addToWatchlist(card).then(function(){
-      console.log("...whatever was swiped right was added");
       DataService.addToWatchlistHits(card).then(function(){
-        console.log("added to watchlist hits");
       });
     });
   }
 
   swipeLeft(card){
-    console.log("swiped left");
-    console.log(card.hit_ids);
-    
     _.each(card.hit_ids, function(hit_id){
       DataService.setAsDelivered(hit_id);
     })
@@ -271,8 +269,14 @@ class MainScreen extends Component{
       var Loading = require('./Loading');
       return <Loading/>
     }else if (this.state.card == no_more_cards){
-      var NoMoreCards = require('./NoMoreCards');
-      return <NoMoreCards/>
+    return(
+        <View style={ styles.loading }>
+          <TouchableOpacity underlayColor='#e6e6e6' onPress={()=> {this.getMoreCards();}}>
+            <Text style= { styles.word } > Press here to get more cards </Text>
+          </TouchableOpacity>
+        </View>
+      );
+      //return <NoMoreCards/>
     }else{
       
 
@@ -286,7 +290,7 @@ class MainScreen extends Component{
         this.state.card.isNeutral = true;
       }
 
-      console.log(this.state.graph);
+      //console.log(this.state.graph);
             /*<View style={styles.filter_container}>
              {this.state.card.scan_names.map(function(scan_name, i){
                 return <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]} key={i}> {scan_name}</Text>
@@ -295,7 +299,7 @@ class MainScreen extends Component{
              </View>*/
 
       var graph_url = 'http://mobile.quotail.co/api/chain/graph/'+ this.state.card.contract_symbol + '?height='+ deviceScreen.height*.55 + '&width='+ deviceScreen.width+ '&token=' + LoginStore.get_jwt();
-      console.log ("GRAPH URL  " + graph_url);
+      //console.log ("GRAPH URL  " + graph_url);
       /*var loader = this.state.graph_loading ?
       <View style={styles.progress}>
         <ActivityIndicatorIOS style={{marginLeft:deviceScreen.width /2, marginTop:deviceScreen.height/3}}/>
@@ -314,13 +318,14 @@ class MainScreen extends Component{
               this.state.card.isBearish==true && GlobalStyles.red]} textAlign={'center'}> {FormatUtils.convertAlertToTitle(this.state.card)} </Text>
             
               <Image 
+              threshold={0}
               resizeMode={'contain'} 
               style={styles.graph} 
               source={{uri:graph_url}}>
             </Image>
 
             <Text style={[GlobalStyles.yellow, styles.filter, GlobalStyles.darker_gray]}> {this.state.card.scan_names[0]}</Text>
-            <Text style = {GlobalStyles.light_gray} > {moment.unix(this.state.card.time/1000).format("MM-DD-YY H:mm:ss")} </Text> 
+            <Text style = {[GlobalStyles.light_gray, {padding:5}]} > {moment.unix(this.state.card.time/1000).format("MM-DD-YY H:mm:ss")} </Text> 
          
           </Animated.View>
           
@@ -381,8 +386,7 @@ var styles = StyleSheet.create({
     fontFamily: 'Arial',
   },
   filter:{
-    textAlign: 'center',
-    color: '#333333',
+    justifyContent:'center',
     padding:4,
     borderRadius:5,
     overflow:'hidden'
@@ -455,6 +459,16 @@ var styles = StyleSheet.create({
   nopeText: {
     fontSize: 16,
     color: 'red',
+  },
+loading:{
+    flex : 1,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop:200,
+    backgroundColor:GlobalConstants.colors.gray_dark
+  },
+  word:{
+    color: GlobalConstants.colors.text_white,
   }
 });
 

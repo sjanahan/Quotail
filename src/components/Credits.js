@@ -3,7 +3,8 @@ var React = require('react-native');
 var {
 	Text,
 	StyleSheet,
-	View
+	View,
+	ScrollView
 } = React;
 
 var GlobalConstants = require('../constants/GlobalConstants');
@@ -41,11 +42,15 @@ var Credits = React.createClass({
 
 						<Text style={ styles.writing }>Checkmark Icon made by Google from 
 						www.flaticon.com is licensed under CC BY 3.0{"\n"}</Text>
+
+						<Text style={ styles.writing }>Arrow Down Icon made by Freepik from www.flaticon.com 
+						is licensed under CC BY 3.0</Text>
 					</View>
 					);
 		return (
-			
-			credits
+			<ScrollView style={styles.sview}>
+			{credits}
+			</ScrollView>
 			
 		);
 
@@ -60,9 +65,9 @@ var styles = StyleSheet.create({
 	sview:{
       flex:1,
       backgroundColor: GlobalConstants.colors.gray_dark,
-      paddingTop:70,
       paddingLeft:10,
       paddingRight:10,
+      paddingTop:10,
     },
     writing:{
        color: GlobalConstants.colors.text_white,

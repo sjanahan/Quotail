@@ -28,7 +28,7 @@ const styles = StyleSheet.create({
   
   },
   menu_item:{
-    borderColor:'#F2F2F2',
+    borderColor:GlobalConstants.colors.gray_mid,
     borderBottomWidth:1,
   },
   item: {
